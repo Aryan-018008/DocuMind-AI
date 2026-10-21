@@ -2303,6 +2303,53 @@ function submitDemoQuestion(question) {
 }
 
 
+const fileInput = document.getElementById("fileInput");
+const processButton = document.getElementById("processFile");
+
+processButton.addEventListener("click", async () => {
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Please select a PDF first.");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    processButton.disabled = true;
+    processButton.textContent = "Processing PDF...";
+
+    try {
+        const response = await fetch("/api/documents/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Upload failed.");
+        }
+
+        alert(
+            `PDF processed successfully!\n` +
+            `Pages: ${result.document.pages}\n` +
+            `Characters: ${result.document.characters}`
+        );
+
+        console.log("Extracted text preview:", result.preview);
+
+    } catch (error) {
+        alert(error.message || "Something went wrong.");
+    } finally {
+        processButton.disabled = false;
+        processButton.textContent = "Analyze document";
+    }
+});
+
+
+
 function getDemoAnswer(question, doc) {
     const q = question.toLowerCase();
     if (q.includes("summar")) return doc.summary;
@@ -2357,6 +2404,7 @@ dropzone.addEventListener("drop", event => {
     dropzone.classList.remove("dragover");
     chooseFile(event.dataTransfer.files[0]);
 });
+
 dropzone.addEventListener("keydown", event => {
     if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();

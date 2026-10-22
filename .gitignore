@@ -1,6 +1,14 @@
 .env
-__pycache__/
 venv/
 .venv/
+__pycache__/
+*.py[cod]
+
+# Local database
+database/*.db
+database/*.sqlite
+database/*.sqlite3
+
+# Uploaded PDF files
 uploads/*
 !uploads/.gitkeep

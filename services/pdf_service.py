@@ -1,5 +1,5 @@
 
-import fitz  # PyMuPDF
+import fitz  # PyMuPDFme 
 
 
 def extract_pdf_text(file_path):

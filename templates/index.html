@@ -2094,7 +2094,7 @@
             </div>
             <div class="upload-selection hidden" id="uploadSelection"></div>
             <div class="upload-actions"><span class="privacy-note"><i data-lucide="shield-check"></i> Your documents stay private.</span><button class="primary-button" id="processFile" disabled><i data-lucide="sparkles"></i> Analyze document</button></div>
-            <p class="demo-note">Frontend demo: document processing will connect to the Flask API in the next phase.</p>
+            <p class="demo-note">Your PDFs are processed by the Server</p>
           </div>
         </section>
 
@@ -2142,12 +2142,10 @@
     <div class="modal-card small-modal"><button class="modal-close" data-close-modal aria-label="Close"><i data-lucide="x"></i></button><span class="modal-icon"><i data-lucide="bell"></i></span><h2 id="notificationTitle">You're all caught up</h2><p>No new notifications right now. We’ll let you know when your documents are ready.</p><button class="primary-button modal-done" data-close-modal>Got it</button></div>
   </div>
 
+  <!-- Vanila js-->
   <script>
-    const demoDocuments = [
-    { id: 1, name: "Q3 Financial Performance.pdf", size: "2.4 MB", pages: 28, date: "Oct 18, 2026", status: "Analyzed", summary: "Quarterly revenue grew 12%, while operating expenses remained stable." },
-    { id: 2, name: "Product Strategy 2027.pdf", size: "1.8 MB", pages: 16, date: "Oct 16, 2026", status: "Analyzed", summary: "The strategy prioritizes customer retention, product quality, and responsible growth." },
-    { id: 3, name: "Market Research Report.pdf", size: "3.1 MB", pages: 42, date: "Oct 12, 2026", status: "Analyzed", summary: "The report identifies changing customer expectations and emerging market opportunities." }
-];
+    
+let demoDocuments = [];
 
 const pageMeta = {
     dashboard: ["Good morning, Alex", "Here's what's happening with your documents."],
@@ -2171,6 +2169,10 @@ let selectedFile = null;
 let selectedWorkspaceDoc = null;
 let conversationCount = 0;
 
+const fileInput = document.getElementById("fileInput");
+const processButton = document.getElementById("processFile");
+const dropzone = document.getElementById("dropzone");
+
 function icon(name, className = "") {
     return `<i data-lucide="${name}"${className ? ` class="${className}"` : ""}></i>`;
 }
@@ -2180,137 +2182,272 @@ function refreshIcons() {
 }
 
 function escapeHTML(value) {
-    return String(value).replace(/[&<>"']/g, ch => ({
-        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
     }[ch]));
 }
-
 
 function showToast(message, iconName = "check-circle") {
     const toast = document.createElement("div");
     toast.className = "toast";
     toast.innerHTML = `${icon(iconName)}<span>${escapeHTML(message)}</span>`;
+
     document.getElementById("toastRegion").appendChild(toast);
     refreshIcons();
+
     window.setTimeout(() => toast.remove(), 3600);
+}
+
+function formatBytes(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) {
+        return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatDocumentDate(value) {
+    if (!value) return "Date unavailable";
+
+    // SQLite CURRENT_TIMESTAMP is UTC.
+    const utcValue = value.replace(" ", "T") + "Z";
+    const date = new Date(utcValue);
+
+    if (Number.isNaN(date.getTime())) return value;
+
+    return date.toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Asia/Kolkata"
+    });
 }
 
 function navigateTo(page) {
     if (!pageElements[page]) return;
-    Object.entries(pageElements).forEach(([key, element]) => element.classList.toggle("active", key === page));
-    document.querySelectorAll(".nav-item[data-page]").forEach(button => button.classList.toggle("active", button.dataset.page === page));
+
+    Object.entries(pageElements).forEach(([key, element]) => {
+        element.classList.toggle("active", key === page);
+    });
+
+    document.querySelectorAll(".nav-item[data-page]").forEach(button => {
+        button.classList.toggle("active", button.dataset.page === page);
+    });
+
     document.getElementById("pageTitle").textContent = pageMeta[page][0];
     document.getElementById("pageSubtitle").textContent = pageMeta[page][1];
     document.getElementById("sidebar").classList.remove("open");
-    if (page === "documents") renderDocuments();
-    if (page === "workspace") renderWorkspaceDocuments();
+
+    if (page === "documents") {
+        renderDocuments(document.getElementById("librarySearch").value);
+    }
+
+    if (page === "workspace") {
+        renderWorkspaceDocuments();
+    }
+
     window.scrollTo({ top: 0, behavior: "smooth" });
     refreshIcons();
 }
 
-
 function docRow(doc) {
-    return `<article class="document-row" data-document-name="${escapeHTML(doc.name.toLowerCase())}">
-    <span class="file-icon">${icon("file-text")}</span>
-    <div class="document-meta"><strong title="${escapeHTML(doc.name)}">${escapeHTML(doc.name)}</strong><span>${escapeHTML(doc.size)} &nbsp;·&nbsp; ${doc.pages} pages &nbsp;·&nbsp; ${escapeHTML(doc.date)}</span></div>
-    <span class="doc-status">${escapeHTML(doc.status)}</span>
-    <button class="row-action open-doc" data-id="${doc.id}" title="Open in AI Workspace" aria-label="Open ${escapeHTML(doc.name)}">${icon("arrow-up-right")}</button>
-  </article>`;
+    return `
+        <article class="document-row"
+            data-document-name="${escapeHTML(doc.name.toLowerCase())}">
+            <span class="file-icon">${icon("file-text")}</span>
+
+            <div class="document-meta">
+                <strong title="${escapeHTML(doc.name)}">
+                    ${escapeHTML(doc.name)}
+                </strong>
+                <span>
+                    ${escapeHTML(doc.size)} &nbsp;·&nbsp;
+                    ${doc.pages} pages &nbsp;·&nbsp;
+                    ${escapeHTML(doc.date)}
+                </span>
+            </div>
+
+            <span class="doc-status">${escapeHTML(doc.status)}</span>
+
+            <button class="row-action open-doc"
+                data-id="${doc.id}"
+                title="Open in AI Workspace"
+                aria-label="Open ${escapeHTML(doc.name)}">
+                ${icon("arrow-up-right")}
+            </button>
+        </article>
+    `;
+}
+
+/* Load actual documents from the Flask API */
+async function loadDocuments() {
+    try {
+        const response = await fetch("/api/documents");
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Could not load documents.");
+        }
+
+        demoDocuments = (result.documents || []).map(doc => ({
+            id: doc.id,
+            name: doc.filename,
+            size: formatBytes(doc.file_size),
+            pages: doc.page_count,
+            date: formatDocumentDate(doc.upload_date),
+            status: doc.status || "extracted",
+            summary: "Text extracted successfully. AI analysis will be available after RAG integration."
+        }));
+
+        if (
+            selectedWorkspaceDoc !== null &&
+            !demoDocuments.some(doc => doc.id === selectedWorkspaceDoc)
+        ) {
+            selectedWorkspaceDoc = null;
+        }
+
+        renderRecentDocuments();
+
+        renderDocuments(
+            document.getElementById("librarySearch").value
+        );
+
+        renderWorkspaceDocuments();
+
+        const total = document.getElementById("totalDocuments");
+
+        if (total) {
+            total.textContent = result.count ?? demoDocuments.length;
+        }
+
+    } catch (error) {
+        console.error("Document loading failed:", error);
+
+        showToast(
+            "Unable to load documents from the database.",
+            "alert-circle"
+        );
+    }
 }
 
 function renderRecentDocuments() {
-    document.getElementById("recentDocuments").innerHTML = demoDocuments.slice(0, 3).map(docRow).join("");
+    const container = document.getElementById("recentDocuments");
+
+    container.innerHTML = demoDocuments
+        .slice(0, 3)
+        .map(docRow)
+        .join("");
+
     refreshIcons();
 }
 
 function renderDocuments(query = "") {
     const normalized = query.trim().toLowerCase();
-    const filtered = demoDocuments.filter(doc => doc.name.toLowerCase().includes(normalized));
-    document.getElementById("allDocuments").innerHTML = filtered.map(docRow).join("");
-    document.getElementById("documentCount").textContent = `${filtered.length} document${filtered.length === 1 ? "" : "s"}`;
-    document.getElementById("emptyDocuments").classList.toggle("hidden", filtered.length > 0);
-    document.getElementById("allDocuments").classList.toggle("hidden", filtered.length === 0);
+
+    const filtered = demoDocuments.filter(doc =>
+        doc.name.toLowerCase().includes(normalized)
+    );
+
+    document.getElementById("allDocuments").innerHTML =
+        filtered.map(docRow).join("");
+
+    document.getElementById("documentCount").textContent =
+        `${filtered.length} document${filtered.length === 1 ? "" : "s"}`;
+
+    document.getElementById("emptyDocuments")
+        .classList.toggle("hidden", filtered.length > 0);
+
+    document.getElementById("allDocuments")
+        .classList.toggle("hidden", filtered.length === 0);
+
     refreshIcons();
 }
 
 function renderWorkspaceDocuments() {
     const container = document.getElementById("workspaceDocumentList");
-    container.innerHTML = demoDocuments.map(doc => `<button class="workspace-doc-button ${selectedWorkspaceDoc === doc.id ? "selected" : ""}" data-id="${doc.id}">${icon("file-text")}<span>${escapeHTML(doc.name)}</span></button>`).join("");
-    if (selectedWorkspaceDoc) {
-        const doc = demoDocuments.find(item => item.id === selectedWorkspaceDoc);
-        document.getElementById("selectedDocLabel").textContent = doc ? doc.name : "Choose a document to begin";
-    }
+
+    container.innerHTML = demoDocuments.map(doc => `
+        <button class="workspace-doc-button ${
+            selectedWorkspaceDoc === doc.id ? "selected" : ""
+        }" data-id="${doc.id}">
+            ${icon("file-text")}
+            <span>${escapeHTML(doc.name)}</span>
+        </button>
+    `).join("");
+
+    const selectedDoc = demoDocuments.find(
+        doc => doc.id === selectedWorkspaceDoc
+    );
+
+    document.getElementById("selectedDocLabel").textContent =
+        selectedDoc ? selectedDoc.name : "Choose a document to begin";
+
     refreshIcons();
 }
 
 function chooseFile(file) {
     if (!file) return;
-    if (file.type !== "application/pdf" && !file.name.toLowerCase().endsWith(".pdf")) {
+
+    if (
+        file.type !== "application/pdf" &&
+        !file.name.toLowerCase().endsWith(".pdf")
+    ) {
         showToast("Please choose a PDF file.", "alert-circle");
         return;
     }
+
     const maxSize = 20 * 1024 * 1024;
+
     if (file.size > maxSize) {
         showToast("This file is larger than 20 MB.", "alert-circle");
         return;
     }
+
     selectedFile = file;
-    document.getElementById("uploadSelection").innerHTML = `${icon("file-text")}<span class="selection-name">${escapeHTML(file.name)}</span><span class="selection-size">${formatBytes(file.size)}</span><button class="row-action" id="removeFile" aria-label="Remove file">${icon("x")}</button>`;
+
+    document.getElementById("uploadSelection").innerHTML = `
+        ${icon("file-text")}
+        <span class="selection-name">${escapeHTML(file.name)}</span>
+        <span class="selection-size">${formatBytes(file.size)}</span>
+        <button class="row-action" id="removeFile" aria-label="Remove file">
+            ${icon("x")}
+        </button>
+    `;
+
     document.getElementById("uploadSelection").classList.remove("hidden");
     document.getElementById("processFile").disabled = false;
     document.getElementById("dropzone").classList.add("has-file");
+
     refreshIcons();
 }
-
-
-function formatBytes(bytes) {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
 
 function clearFile() {
     selectedFile = null;
-    document.getElementById("fileInput").value = "";
+    fileInput.value = "";
+
     document.getElementById("uploadSelection").classList.add("hidden");
     document.getElementById("uploadSelection").innerHTML = "";
-    document.getElementById("processFile").disabled = true;
-}
+    document.getElementById("dropzone").classList.remove("has-file");
 
+    processButton.disabled = true;
+    processButton.innerHTML = `${icon("sparkles")} Analyze document`;
 
-function submitDemoQuestion(question) {
-    const cleanQuestion = question.trim();
-    if (!cleanQuestion) return;
-    if (!selectedWorkspaceDoc) {
-        showToast("Choose a document first to start chatting.", "file-question");
-        return;
-    }
-    const doc = demoDocuments.find(item => item.id === selectedWorkspaceDoc);
-    const messages = document.getElementById("chatMessages");
-    const user = document.createElement("div");
-    user.className = "user-message";
-    user.textContent = cleanQuestion;
-    messages.appendChild(user);
-    const response = document.createElement("div");
-    response.className = "assistant-message";
-    response.innerHTML = `<span class="message-spark">${icon("sparkles")}</span><div><strong>DocuMind Assistant</strong><div class="bot-response">${escapeHTML(getDemoAnswer(cleanQuestion, doc))}<br><br><span style="color:var(--teal);font-weight:700">Demo response · Source integration comes with the RAG backend.</span></div></div>`;
-    messages.appendChild(response);
-    messages.scrollTop = messages.scrollHeight;
-    conversationCount++;
-    document.getElementById("chatInput").value = "";
     refreshIcons();
 }
 
-
-const fileInput = document.getElementById("fileInput");
-const processButton = document.getElementById("processFile");
-
+/* Upload the selected PDF to Flask */
 processButton.addEventListener("click", async () => {
-    const file = fileInput.files[0];
+    const file = selectedFile;
 
     if (!file) {
-        alert("Please select a PDF first.");
+        showToast("Please select a PDF first.", "alert-circle");
         return;
     }
 
@@ -2332,73 +2469,200 @@ processButton.addEventListener("click", async () => {
             throw new Error(result.error || "Upload failed.");
         }
 
-        alert(
-            `PDF processed successfully!\n` +
-            `Pages: ${result.document.pages}\n` +
-            `Characters: ${result.document.characters}`
-        );
-
         console.log("Extracted text preview:", result.preview);
 
+        await loadDocuments();
+        clearFile();
+
+        showToast("PDF uploaded and saved successfully.", "check-circle");
+
     } catch (error) {
-        alert(error.message || "Something went wrong.");
+        console.error("PDF upload failed:", error);
+
+        showToast(
+            error.message || "Something went wrong.",
+            "alert-circle"
+        );
+
     } finally {
-        processButton.disabled = false;
-        processButton.textContent = "Analyze document";
+        processButton.disabled = !selectedFile;
+        processButton.innerHTML = `${icon("sparkles")} Analyze document`;
+
+        refreshIcons();
     }
 });
 
-
-
 function getDemoAnswer(question, doc) {
     const q = question.toLowerCase();
-    if (q.includes("summar")) return doc.summary;
-    if (q.includes("risk")) return "A reliable answer will be generated from relevant passages retrieved from this document. The RAG backend will return source page references.";
-    if (q.includes("key finding") || q.includes("insight")) return `Key takeaway: ${doc.summary} The connected RAG pipeline will extract evidence-backed findings and attach page citations.`;
-    return `I’ve received your question about "${doc.name}". Once the backend is connected, DocuMind will retrieve the most relevant passages and generate an answer with page citations.`;
+
+    if (q.includes("summar")) {
+        return doc.summary;
+    }
+
+    if (q.includes("risk")) {
+        return "The RAG backend will retrieve relevant passages and provide source page references.";
+    }
+
+    if (q.includes("key finding") || q.includes("insight")) {
+        return `Key takeaway: ${doc.summary} Evidence-backed findings will be available after RAG integration.`;
+    }
+
+    return `Your question about "${doc.name}" has been received. AI answers grounded in the document will be connected during RAG integration.`;
 }
 
+function submitDemoQuestion(question) {
+    const cleanQuestion = question.trim();
+
+    if (!cleanQuestion) return;
+
+    if (selectedWorkspaceDoc === null) {
+        showToast("Choose a document first to start chatting.", "file-question");
+        return;
+    }
+
+    const doc = demoDocuments.find(
+        item => item.id === selectedWorkspaceDoc
+    );
+
+    if (!doc) {
+        showToast("Please select a document.", "alert-circle");
+        return;
+    }
+
+    const messages = document.getElementById("chatMessages");
+
+    const user = document.createElement("div");
+    user.className = "user-message";
+    user.textContent = cleanQuestion;
+    messages.appendChild(user);
+
+    const response = document.createElement("div");
+    response.className = "assistant-message";
+
+    response.innerHTML = `
+        <span class="message-spark">${icon("sparkles")}</span>
+        <div>
+            <strong>DocuMind Assistant</strong>
+            <div class="bot-response">
+                ${escapeHTML(getDemoAnswer(cleanQuestion, doc))}
+                <br><br>
+                <span style="color:var(--teal);font-weight:700">
+                    Demo response · RAG integration is pending.
+                </span>
+            </div>
+        </div>
+    `;
+
+    messages.appendChild(response);
+    messages.scrollTop = messages.scrollHeight;
+
+    conversationCount++;
+    document.getElementById("chatInput").value = "";
+
+    refreshIcons();
+}
+
+/* Main navigation and page interactions */
 document.addEventListener("click", event => {
     const pageButton = event.target.closest("[data-page]");
+
     if (pageButton) {
         event.preventDefault();
         navigateTo(pageButton.dataset.page);
     }
+
     const openDoc = event.target.closest(".open-doc");
+
     if (openDoc) {
         selectedWorkspaceDoc = Number(openDoc.dataset.id);
         navigateTo("workspace");
         renderWorkspaceDocuments();
     }
+
     const workspaceDoc = event.target.closest(".workspace-doc-button");
+
     if (workspaceDoc) {
         selectedWorkspaceDoc = Number(workspaceDoc.dataset.id);
         renderWorkspaceDocuments();
+
+        const doc = demoDocuments.find(
+            item => item.id === selectedWorkspaceDoc
+        );
+
         const messages = document.getElementById("chatMessages");
-        const doc = demoDocuments.find(item => item.id === selectedWorkspaceDoc);
-        messages.innerHTML = `<div class="assistant-message"><span class="message-spark">${icon("sparkles")}</span><div><strong>${escapeHTML(doc.name)}</strong><p>${escapeHTML(doc.summary)}</p><div class="suggestion-list"><button class="suggestion-chip">Summarize this document</button><button class="suggestion-chip">What are the key findings?</button></div></div></div>`;
+
+        if (doc) {
+            messages.innerHTML = `
+                <div class="assistant-message">
+                    <span class="message-spark">${icon("sparkles")}</span>
+                    <div>
+                        <strong>${escapeHTML(doc.name)}</strong>
+                        <p>${escapeHTML(doc.summary)}</p>
+                        <div class="suggestion-list">
+                            <button class="suggestion-chip">Summarize this document</button>
+                            <button class="suggestion-chip">What are the key findings?</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         refreshIcons();
     }
+
     const suggestion = event.target.closest(".suggestion-chip");
-    if (suggestion) submitDemoQuestion(suggestion.textContent);
-    if (event.target.closest("#topUpload, #analyzeButton, #documentsUpload")) navigateTo("upload");
-    if (event.target.closest("#browseFiles, #dropzone")) {
-        if (!event.target.closest("#browseFiles") || event.target.closest("#browseFiles")) {
-            if (event.target.closest("#browseFiles")) event.stopPropagation();
-            document.getElementById("fileInput").click();
-        }
+
+    if (suggestion) {
+        submitDemoQuestion(suggestion.textContent);
     }
-    if (event.target.closest("#removeFile")) clearFile();
-    if (event.target.closest("#notificationButton")) document.getElementById("notificationModal").classList.remove("hidden");
-    if (event.target.closest("[data-close-modal]")) document.getElementById("notificationModal").classList.add("hidden");
-    if (event.target.closest("#mobileMenu")) document.getElementById("sidebar").classList.toggle("open");
-    if (event.target.closest("#profileMenu")) showToast("Profile menu will be connected to authentication later.", "user-round");
+
+    if (event.target.closest("#topUpload, #analyzeButton, #documentsUpload")) {
+        navigateTo("upload");
+    }
+
+    if (event.target.closest("#browseFiles")) {
+        event.preventDefault();
+        event.stopPropagation();
+        fileInput.click();
+    } else if (event.target.closest("#dropzone")) {
+        fileInput.click();
+    }
+
+    if (event.target.closest("#removeFile")) {
+        clearFile();
+    }
+
+    if (event.target.closest("#notificationButton")) {
+        document.getElementById("notificationModal").classList.remove("hidden");
+    }
+
+    if (event.target.closest("[data-close-modal]")) {
+        document.getElementById("notificationModal").classList.add("hidden");
+    }
+
+    if (event.target.closest("#mobileMenu")) {
+        document.getElementById("sidebar").classList.toggle("open");
+    }
+
+    if (event.target.closest("#profileMenu")) {
+        showToast("Profile menu will be connected to authentication later.", "user-round");
+    }
 });
 
-document.getElementById("fileInput").addEventListener("change", event => chooseFile(event.target.files[0]));
-const dropzone = document.getElementById("dropzone");
-dropzone.addEventListener("dragover", event => { event.preventDefault(); dropzone.classList.add("dragover"); });
-dropzone.addEventListener("dragleave", () => dropzone.classList.remove("dragover"));
+/* File picker and drag-and-drop */
+fileInput.addEventListener("change", event => {
+    chooseFile(event.target.files[0]);
+});
+
+dropzone.addEventListener("dragover", event => {
+    event.preventDefault();
+    dropzone.classList.add("dragover");
+});
+
+dropzone.addEventListener("dragleave", () => {
+    dropzone.classList.remove("dragover");
+});
+
 dropzone.addEventListener("drop", event => {
     event.preventDefault();
     dropzone.classList.remove("dragover");
@@ -2408,23 +2672,22 @@ dropzone.addEventListener("drop", event => {
 dropzone.addEventListener("keydown", event => {
     if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        document.getElementById("fileInput").click();
+        fileInput.click();
     }
 });
 
-document.getElementById("processFile").addEventListener("click", () => {
-    if (!selectedFile) return;
-    showToast(`${selectedFile.name} is selected. Flask processing will be connected next.`, "file-check");
-    document.getElementById("processFile").innerHTML = `${icon("check")} Selected`;
-    refreshIcons();
+/* Search */
+document.getElementById("librarySearch").addEventListener("input", event => {
+    renderDocuments(event.target.value);
 });
 
-document.getElementById("librarySearch").addEventListener("input", event => renderDocuments(event.target.value));
 document.getElementById("globalSearch").addEventListener("input", event => {
     const box = document.getElementById("searchBox");
+
     if (event.target.value.trim()) {
         box.classList.add("expanded");
         navigateTo("documents");
+
         document.getElementById("librarySearch").value = event.target.value;
         renderDocuments(event.target.value);
     }
@@ -2432,42 +2695,58 @@ document.getElementById("globalSearch").addEventListener("input", event => {
 
 document.getElementById("searchBox").addEventListener("click", () => {
     const box = document.getElementById("searchBox");
+
     box.classList.add("expanded");
     document.getElementById("globalSearch").focus();
 });
 
+/* Keyboard shortcuts */
 document.addEventListener("keydown", event => {
-    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+    if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === "k"
+    ) {
         event.preventDefault();
+
         const box = document.getElementById("searchBox");
         box.classList.add("expanded");
         document.getElementById("globalSearch").focus();
     }
+
     if (event.key === "Escape") {
         document.getElementById("notificationModal").classList.add("hidden");
         document.getElementById("sidebar").classList.remove("open");
     }
 });
 
+/* Chat form — responses remain demo-only for now */
 document.getElementById("chatForm").addEventListener("submit", event => {
     event.preventDefault();
     submitDemoQuestion(document.getElementById("chatInput").value);
 });
 
+/* Theme switch */
 document.getElementById("themeToggle").addEventListener("change", event => {
     document.body.classList.toggle("dark", event.target.checked);
-    showToast(event.target.checked ? "Dark mode enabled." : "Light mode enabled.", "moon");
+
+    showToast(
+        event.target.checked ? "Dark mode enabled." : "Light mode enabled.",
+        "moon"
+    );
 });
 
+/* Close notification modal when its backdrop is clicked */
 document.getElementById("notificationModal").addEventListener("click", event => {
-    if (event.target.id === "notificationModal") event.currentTarget.classList.add("hidden");
+    if (event.target.id === "notificationModal") {
+        event.currentTarget.classList.add("hidden");
+    }
 });
 
-
-renderRecentDocuments();
-renderDocuments();
-renderWorkspaceDocuments();
+/* Initial setup */
 refreshIcons();
+loadDocuments();
+
+    
 
   </script>
 </body>

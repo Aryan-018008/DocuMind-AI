@@ -1,2 +1,7 @@
 Flask
 PyMuPDF
+sentence-transformers
+faiss-cpu
+numpy
+python-dotenv
+groq

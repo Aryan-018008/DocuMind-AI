@@ -1,6 +1,4 @@
-
-import fitz  # PyMuPDFme 
-
+import fitz  # PyMuPDF
 
 def extract_pdf_text(file_path):
     """Extract text from a PDF while preserving page numbers."""
@@ -14,7 +12,7 @@ def extract_pdf_text(file_path):
             raise ValueError("The PDF has no pages.")
 
         for page_number, page in enumerate(pdf, start=1):
-            text = page.get_text("text").strip()
+            text = page.get_text("text" , sort= True).strip()
 
             if text:
                 pages.append({

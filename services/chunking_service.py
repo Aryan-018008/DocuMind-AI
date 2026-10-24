@@ -1,6 +1,38 @@
-import re  #RegEx - Regular Expression
+
+import re
+# Common labels found in structured documents.
+FIELD_LABELS = [
+    "Registration Number",
+    "Candidate Name",
+    "Date of Birth",
+    "Exam Venue",
+    "Exam Centre",
+    "Date of Test",
+    "Reporting Time",
+    "Gate Closure Time",
+    "Test Timing",
+    "Test Center",
+    "Test Centre",
+    "Roll No",
+    "Email Address",
+    "Phone Number",
+    "Application Number",
+]
+
+FIELD_PATTERN = re.compile(
+    r"(?<!\w)("
+    + "|".join(
+        re.escape(label)
+        for label in sorted(FIELD_LABELS, key=len, reverse=True)
+    )
+    + r")\b",
+    re.IGNORECASE,
+)
+
 
 def chunk_pdf_pages(pages, chunk_size=800, overlap=150):
+    """Create field-aware chunks while preserving page numbers."""
+
     if chunk_size <= 0:
         raise ValueError("chunk_size must be greater than zero.")
 
@@ -12,6 +44,18 @@ def chunk_pdf_pages(pages, chunk_size=800, overlap=150):
     chunks = []
     chunk_index = 0
 
+    def add_chunk(page_number, text):
+        nonlocal chunk_index
+
+        text = text.strip()
+        if text:
+            chunks.append({
+                "chunk_index": chunk_index,
+                "page": page_number,
+                "text": text,
+            })
+            chunk_index += 1
+
     for page in pages:
         page_number = page["page"]
         text = page["text"].strip()
@@ -19,74 +63,124 @@ def chunk_pdf_pages(pages, chunk_size=800, overlap=150):
         if not text:
             continue
 
-        # Normalize spacing without removing line boundaries.
         text = re.sub(r"[ \t]+", " ", text)
+
+        # Separate recognized field labels when multiple labels
+        # have been merged into a single extracted line.
+        text = FIELD_PATTERN.sub(
+            lambda match: "\n" + match.group(0),
+            text,
+        )
+
         lines = [
             line.strip()
             for line in text.splitlines()
             if line.strip()
         ]
 
-        # Keep complete lines together whenever possible.
-        groups = []
-        current_group = []
+        # Keep each recognized field and its value together.
+        # blocks = []
+        # current_block = []
 
-        for line in lines:
-            candidate = "\n".join(current_group + [line])
+        # for line in lines:
+        #     is_field = bool(FIELD_PATTERN.match(line))
 
-            if current_group and len(candidate) > chunk_size:
-                groups.append("\n".join(current_group))
-                current_group = [line]
+        #     if is_field and current_block:
+        #         blocks.append("\n".join(current_block))
+        #         current_block = [line]
+        #     else:
+        #         current_block.append(line)
+
+        # if current_block:
+        #     blocks.append("\n".join(current_block))
+
+        
+        blocks = []
+        current_block = []
+        i = 0
+
+        schedule_labels = (
+            "Date of Test:",
+            "Reporting Time:",
+            "Gate Closure Time:",
+            "Test Timing:",
+        )
+
+        while i < len(lines):
+            line = lines[i]
+
+            # Keep the complete structured schedule in one block.
+            if line.strip() == "Structured Test Schedule:":
+                if current_block:
+                    blocks.append("\n".join(current_block))
+                    current_block = []
+
+                schedule_block = [line]
+                i += 1
+
+                while (
+                    i < len(lines)
+                    and lines[i].startswith(schedule_labels)
+                ):
+                    schedule_block.append(lines[i])
+                    i += 1
+
+                blocks.append("\n".join(schedule_block))
+                continue
+
+            is_field = bool(FIELD_PATTERN.match(line))
+
+            if is_field and current_block:
+                blocks.append("\n".join(current_block))
+                current_block = [line]
             else:
-                current_group.append(line)
+                current_block.append(line)
 
-        if current_group:
-            groups.append("\n".join(current_group))
+            i += 1
 
-        # Create chunks with a small overlap of complete lines.
-        start = 0
+        if current_block:
+            blocks.append("\n".join(current_block))
 
-        while start < len(groups):
-            chunk_lines = []
-            length = 0
-            end = start
 
-            while end < len(groups):
-                line = groups[end]
-                extra = len(line) + (1 if chunk_lines else 0)
+        # Pack blocks into chunks without splitting blocks unnecessarily.
+        current_chunk = []
+        current_length = 0
 
-                if chunk_lines and length + extra > chunk_size:
-                    break
+        for block in blocks:
+            block_length = len(block)
 
-                chunk_lines.append(line)
-                length += extra
-                end += 1
+            # Oversized blocks are split into smaller text pieces.
+            if block_length > chunk_size:
+                if current_chunk:
+                    add_chunk(page_number, "\n".join(current_chunk))
+                    current_chunk = []
+                    current_length = 0
 
-            chunk_text = "\n".join(chunk_lines).strip()
+                start = 0
+                while start < block_length:
+                    end = min(start + chunk_size, block_length)
+                    add_chunk(page_number, block[start:end])
 
-            if chunk_text:
-                chunks.append({
-                    "chunk_index": chunk_index,
-                    "page": page_number,
-                    "text": chunk_text
-                })
-                chunk_index += 1
+                    if end == block_length:
+                        break
 
-            if end >= len(groups):
-                break
+                    start = max(start + 1, end - overlap)
 
-            # Retain complete lines as overlap, not partial words.
-            overlap_length = 0
-            next_start = end
+                continue
 
-            while next_start > start:
-                previous_line = groups[next_start - 1]
-                if overlap_length + len(previous_line) > overlap:
-                    break
+            extra = block_length + (1 if current_chunk else 0)
 
-                overlap_length += len(previous_line)
-                next_start -= 1
+            if current_chunk and current_length + extra > chunk_size:
+                add_chunk(page_number, "\n".join(current_chunk))
+                current_chunk = []
+                current_length = 0
 
-            start = next_start if next_start > start else end
+            current_chunk.append(block)
+            current_length += block_length + (
+                1 if len(current_chunk) > 1 else 0
+            )
+
+        if current_chunk:
+            add_chunk(page_number, "\n".join(current_chunk))
 
     return chunks

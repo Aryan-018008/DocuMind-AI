@@ -231,6 +231,7 @@ def get_documents():
             SELECT
                 id,
                 filename,
+                stored_filename,
                 file_size,
                 page_count,
                 upload_date,

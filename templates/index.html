@@ -2300,10 +2300,11 @@ async function loadDocuments() {
             id: doc.id,
             name: doc.filename,
             size: formatBytes(doc.file_size),
+            storedFilename: doc.stored_filename,
             pages: doc.page_count,
             date: formatDocumentDate(doc.upload_date),
             status: doc.status || "extracted",
-            summary: "Text extracted successfully. AI analysis will be available after RAG integration."
+            summary: "Text extracted successfully."
         }));
 
         if (
@@ -2376,7 +2377,9 @@ function renderWorkspaceDocuments() {
     container.innerHTML = demoDocuments.map(doc => `
         <button class="workspace-doc-button ${
             selectedWorkspaceDoc === doc.id ? "selected" : ""
-        }" data-id="${doc.id}">
+        }"
+            data-id="${escapeHTML(String(doc.id))}"
+            data-filename="${escapeHTML(doc.name)}">
             ${icon("file-text")}
             <span>${escapeHTML(doc.name)}</span>
         </button>
@@ -2391,6 +2394,7 @@ function renderWorkspaceDocuments() {
 
     refreshIcons();
 }
+
 
 function chooseFile(file) {
     if (!file) return;
@@ -2510,7 +2514,7 @@ function getDemoAnswer(question, doc) {
     return `Your question about "${doc.name}" has been received. AI answers grounded in the document will be connected during RAG integration.`;
 }
 
-function submitDemoQuestion(question) {
+async function submitDemoQuestion(question) {
     const cleanQuestion = question.trim();
 
     if (!cleanQuestion) return;
@@ -2530,6 +2534,8 @@ function submitDemoQuestion(question) {
     }
 
     const messages = document.getElementById("chatMessages");
+    const chatInput = document.getElementById("chatInput");
+    const chatForm = document.getElementById("chatForm");
 
     const user = document.createElement("div");
     user.className = "user-message";
@@ -2539,28 +2545,62 @@ function submitDemoQuestion(question) {
     const response = document.createElement("div");
     response.className = "assistant-message";
 
+    const loading = document.createElement("div");
+    loading.className = "bot-response";
+    loading.textContent = "Analyzing your document...";
+
     response.innerHTML = `
         <span class="message-spark">${icon("sparkles")}</span>
         <div>
             <strong>DocuMind Assistant</strong>
-            <div class="bot-response">
-                ${escapeHTML(getDemoAnswer(cleanQuestion, doc))}
-                <br><br>
-                <span style="color:var(--teal);font-weight:700">
-                    Demo response · RAG integration is pending.
-                </span>
-            </div>
         </div>
     `;
-
+    response.lastElementChild.appendChild(loading);
     messages.appendChild(response);
     messages.scrollTop = messages.scrollHeight;
 
+    chatInput.value = "";
     conversationCount++;
-    document.getElementById("chatInput").value = "";
+    // document.getElementById("chatInput").value = "";
+    const submitButton = chatForm.querySelector('button[type="submit"]');
+    if (submitButton) submitButton.disabled = true;
 
-    refreshIcons();
-}
+      try {
+        const apiResponse = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                question: cleanQuestion,
+                filename: doc.storedFilename
+            })
+        });
+
+        const result = await apiResponse.json();
+
+        if (!apiResponse.ok) {
+            throw new Error(result.error || "Unable to answer this question.");
+        }
+
+        loading.textContent = result.answer || "No answer was returned.";
+
+        if (result.sources && result.sources.length > 0) {
+            const sources = document.createElement("p");
+            sources.style.marginTop = "10px";
+            sources.textContent = "Sources: " + result.sources
+                .map(source => `Page ${source.page}, Chunk ${source.chunk_index}`)
+                .join("; ");
+
+            loading.appendChild(sources);
+        } 
+    } catch (error) {
+        loading.textContent = `Error: ${error.message}`;
+    }finally {
+        if (submitButton) submitButton.disabled = false;
+        messages.scrollTop = messages.scrollHeight;
+        refreshIcons();
+}}
 
 /* Main navigation and page interactions */
 document.addEventListener("click", event => {
@@ -2745,9 +2785,6 @@ document.getElementById("notificationModal").addEventListener("click", event => 
 /* Initial setup */
 refreshIcons();
 loadDocuments();
-
-    
-
   </script>
 </body>
 </html>

@@ -1,156 +1,4 @@
 
-# import faiss
-# import numpy as np
-# import re
-
-# from services.embedding_service import generate_embeddings
-
-
-# class VectorStore:
-#     """Store and search PDF text chunks using FAISS."""
-
-#     def __init__(self):
-#         self.index = None
-#         self.chunks = []
-
-#     def build_index(self, chunks):
-#         """Generate embeddings and build a FAISS index."""
-
-#         if not chunks:
-#             raise ValueError("Cannot build an index without chunks.")
-
-#         texts = [chunk["text"] for chunk in chunks]
-
-#         embeddings = generate_embeddings(texts)
-#         embeddings = np.asarray(embeddings, dtype=np.float32)
-
-#         if embeddings.ndim != 2 or embeddings.shape[0] != len(chunks):
-#             raise ValueError("Invalid embedding dimensions.")
-
-#         # Normalized vectors + inner product = cosine similarity
-#         index = faiss.IndexFlatIP(embeddings.shape[1])
-#         index.add(embeddings)
-
-#         self.index = index
-#         self.chunks = [dict(chunk) for chunk in chunks]
-
-#         return index.ntotal
-
-#     def search(self, query, top_k=3):
-#         """Search chunks using semantic and keyword relevance."""
-
-#         if self.index is None or not self.chunks:
-#             raise ValueError("Build the vector index before searching.")
-
-#         if not isinstance(query, str) or not query.strip():
-#             raise ValueError("Search query cannot be empty.")
-
-#         if (
-#             not isinstance(top_k, int)
-#             or isinstance(top_k, bool)
-#             or top_k < 1
-#         ):
-#             raise ValueError("top_k must be a positive integer.")
-
-#         # 1. Semantic search across all chunks
-#         query_embedding = generate_embeddings([query])
-#         query_embedding = np.asarray(
-#             query_embedding, dtype=np.float32
-#         )
-
-#         scores, indices = self.index.search(
-#             query_embedding, self.index.ntotal
-#         )
-
-#         semantic_scores = {
-#             int(idx): float(score)
-#             for score, idx in zip(scores[0], indices[0])
-#             if idx >= 0
-#         }
-
-#         # 2. Remove common words from the query
-#         stop_words = {
-#             "what", "is", "the", "a", "an", "on", "in",
-#             "of", "to", "and", "for", "from", "listed",
-#             "tell", "me", "please", "where"
-#         }
-
-#         query_terms = set(
-#             re.findall(r"\b\w+\b", query.lower())
-#         ) - stop_words
-
-#         results = []
-
-#         # 3. Combine semantic, keyword, and field relevance
-#         for idx, chunk in enumerate(self.chunks):
-#             text = chunk["text"].lower()
-
-#             text_terms = set(
-#                 re.findall(r"\b\w+\b", text)
-#             )
-
-#             matched_terms = query_terms & text_terms
-
-#             keyword_score = (
-#                 len(matched_terms) / len(query_terms)
-#                 if query_terms else 0.0
-#             )
-
-#             semantic_score = semantic_scores.get(idx, 0.0)
-
-#             # Give extra priority to matching field labels
-#             # normalized_text = re.sub(r"\s+", " ", text)
-#             # normalized_query = query.lower()
-
-#             # field_boost = 0.0
-
-#             # if "venue" in normalized_query:
-#             #     if re.search(
-#             #         r"\bexam\s+venue\b",
-#             #         normalized_text
-#             #     ):
-#             #         field_boost = 0.5
-
-#             # Give priority to chunks containing an actual venue field.(Particular Target)
-#             normalized_text = re.sub(r"\s+", " ", text)
-#             normalized_query = query.lower()
-
-#             field_boost = 0.0
-
-#             if "venue" in normalized_query:
-#              venue_pattern = (
-#                   r"\bexam\s+venue\s*:?\s*"
-#                   r"(?!listed\b|is\b|was\b|will\b)"
-#                   r"[A-Za-z0-9]"
-#                )
-
-#             if re.search(venue_pattern, normalized_text):
-#              field_boost = 0.5
-
-#             combined_score = (
-#                 0.7 * semantic_score
-#                 + 0.3 * keyword_score
-#                 + field_boost
-#             )
-
-#             result = dict(chunk)
-#             result["similarity_score"] = semantic_score
-#             result["keyword_score"] = keyword_score
-#             result["field_boost"] = field_boost
-#             result["combined_score"] = combined_score
-            
-
-#             results.append(result)
-
-#         # 4. Highest combined score first
-#         results.sort(
-#             key=lambda item: item["combined_score"],
-#             reverse=True
-#         )
-
-#         return results[:min(top_k, len(results))]
-
-
 import re
 import unicodedata
 
@@ -161,140 +9,230 @@ from services.embedding_service import generate_embeddings
 
 
 class VectorStore:
-    """Store and retrieve PDF chunks using semantic and keyword relevance."""
-
     STOP_WORDS = {
-        "what", "is", "the", "a", "an", "on", "in", "of",
-        "to", "and", "for", "from", "tell", "me", "please",
-        "where", "when", "who", "which", "how", "does",
-        "do", "can", "could", "would", "should", "my",
-        "your", "their", "this", "that", "be", "are",
-        "was", "were", "has", "have", "had", "listed"
+        "a", "an", "the", "is", "are", "was", "were", "be", "been",
+        "being", "of", "to", "in", "on", "at", "by", "for", "from",
+        "and", "or", "but", "with", "as", "into", "about", "this",
+        "that", "these", "those", "it", "its", "i", "we", "you",
+        "he", "she", "they", "them", "my", "your", "our", "their",
+        "what", "which", "who", "when", "where", "why", "how",
+        "do", "does", "did", "can", "could", "would", "should",
+        "please", "tell", "me", "explain", "describe", "show",
+        "find", "give", "list", "document", "pdf", "file",
     }
 
     def __init__(self):
         self.index = None
         self.chunks = []
+        self.dimension = None
 
-     
-            
     @staticmethod
-    def _tokenize(text):
-        """Normalize PDF text and extract searchable keywords."""
-        text = unicodedata.normalize("NFKC", text)
+    def _normalize(text):
+        text = unicodedata.normalize("NFKC", str(text))
+        text = (
+            text.replace("\u019f", "ti")
+                .replace("\u0275", "ti")
+                .replace("\u03b8", "ti")
+                .replace("\u03f4", "ti")
+        )
+        return text.lower()
 
-        # Repair the exact PDF extraction artifact.
-        text = text.replace("\u019f", "ti")
-        text = text.replace("\u0275", "ti")
+    # @classmethod
+    # def _tokenize(cls, text):
+    #     text = cls._normalize(text)
+    #     tokens = re.findall(r"[a-z0-9]+", text)
 
-        text = text.lower()
+    #     # Light normalization: allow common word-form matches without
+    #     # relying on PDF-specific vocabulary or external NLP packages.
+    #     normalized = set()
 
-        return set(re.findall(r"[a-z0-9]+", text))
+    #     for token in tokens:
+    #         if token in cls.STOP_WORDS:
+    #             continue
+
+    #         normalized.add(token)
+
+    #         if len(token) > 5 and token.endswith("ing"):
+    #             normalized.add(token[:-3])
+    #             normalized.add(token[:-3] + "e")
+
+    #         elif len(token) > 4 and token.endswith("ies"):
+    #             normalized.add(token[:-3] + "y")
+
+    #         elif len(token) > 4 and token.endswith("es"):
+    #             normalized.add(token[:-2])
+
+    #         elif len(token) > 3 and token.endswith("s"):
+    #             normalized.add(token[:-1])
+
+    #         elif len(token) > 4 and token.endswith("ed"):
+    #             normalized.add(token[:-2])
+
+    #     return normalized
+
+    
+    @classmethod
+    def _tokenize(cls, text):
+        text = cls._normalize(text)
+        tokens = re.findall(r"[a-z0-9]+", text)
+
+        # Keep one normalized token per original word.
+        normalized = set()
+
+        for token in tokens:
+            if token in cls.STOP_WORDS:
+                continue
+
+            # Normalize common plural forms without adding extra tokens.
+            if len(token) > 4 and token.endswith("ies"):
+                token = token[:-3] + "y"
+            elif len(token) > 3 and token.endswith("s") and not token.endswith("ss"):
+                token = token[:-1]
+
+            normalized.add(token)
+
+        return normalized
 
 
     def build_index(self, chunks):
-        """Generate embeddings and build a FAISS index."""
-        if not chunks:
-            raise ValueError("Cannot build an index without chunks.")
+        if not isinstance(chunks, list) or not chunks:
+            raise ValueError("Provide a non-empty list of chunks.")
 
-        texts = [chunk.get("text", "") for chunk in chunks]
+        valid_chunks = []
 
-        if any(
-            not isinstance(text, str) or not text.strip()
-            for text in texts
-        ):
-            raise ValueError(
-                "Every chunk must contain non-empty text."
-            )
+        for chunk in chunks:
+            if not isinstance(chunk, dict):
+                continue
 
-        embeddings = generate_embeddings(texts)
-        embeddings = np.asarray(embeddings, dtype=np.float32)
+            text = chunk.get("text")
 
-        if embeddings.ndim != 2 or embeddings.shape[0] != len(chunks):
-            raise ValueError("Invalid embedding dimensions.")
+            if not isinstance(text, str) or not text.strip():
+                continue
+
+            valid_chunks.append(dict(chunk))
+
+        if not valid_chunks:
+            raise ValueError("No valid text chunks were provided.")
+
+        texts = [chunk["text"] for chunk in valid_chunks]
+        embeddings = np.asarray(
+            generate_embeddings(texts),
+            dtype=np.float32,
+        )
+
+        if embeddings.ndim != 2:
+            raise ValueError("Embeddings must be a 2D array.")
+
+        if embeddings.shape[0] != len(valid_chunks):
+            raise ValueError("Embedding count does not match chunk count.")
+
+        if embeddings.shape[1] == 0:
+            raise ValueError("Embedding dimension cannot be zero.")
 
         if not np.isfinite(embeddings).all():
             raise ValueError("Embeddings contain invalid numeric values.")
 
-        # Inner product represents cosine similarity when vectors
-        # are normalized by the embedding service.
-        index = faiss.IndexFlatIP(embeddings.shape[1])
-        index.add(embeddings)
+        # Cosine similarity is computed using normalized vectors.
+        norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
 
-        self.index = index
-        self.chunks = [dict(chunk) for chunk in chunks]
+        if np.any(norms == 0):
+            raise ValueError("A chunk produced a zero-length embedding.")
 
-        return index.ntotal
+        embeddings = np.ascontiguousarray(
+            embeddings / norms,
+            dtype=np.float32,
+        )
+
+        self.dimension = embeddings.shape[1]
+        self.index = faiss.IndexFlatIP(self.dimension)
+        self.index.add(embeddings)
+        self.chunks = valid_chunks
+
+        return len(self.chunks)
 
     def search(self, query, top_k=3):
-        """Rank chunks using semantic similarity and keyword overlap."""
         if self.index is None or not self.chunks:
-            raise ValueError(
-                "Build the vector index before searching."
-            )
+            raise RuntimeError("Build the vector index before searching.")
 
         if not isinstance(query, str) or not query.strip():
             raise ValueError("Search query cannot be empty.")
 
-        if (
-            not isinstance(top_k, int)
-            or isinstance(top_k, bool)
-            or top_k < 1
-        ):
+        if not isinstance(top_k, int) or isinstance(top_k, bool) or top_k < 1:
             raise ValueError("top_k must be a positive integer.")
 
-        # 1. Calculate semantic similarity for all chunks.
-        query_embedding = generate_embeddings([query])
         query_embedding = np.asarray(
-            query_embedding, dtype=np.float32
+            generate_embeddings([query.strip()]),
+            dtype=np.float32,
         )
 
-        scores, indices = self.index.search(
-            query_embedding, self.index.ntotal
+        if query_embedding.ndim != 2:
+            raise ValueError("Query embedding must be a 2D array.")
+
+        if query_embedding.shape != (1, self.dimension):
+            raise ValueError("Query embedding dimension does not match index.")
+
+        if not np.isfinite(query_embedding).all():
+            raise ValueError("Query embedding contains invalid values.")
+
+        query_norm = np.linalg.norm(query_embedding)
+
+        if query_norm == 0:
+            raise ValueError("Query embedding has zero length.")
+
+        query_embedding = np.ascontiguousarray(
+            query_embedding / query_norm,
+            dtype=np.float32,
         )
 
-        semantic_scores = {
-            int(idx): float(score)
-            for score, idx in zip(scores[0], indices[0])
-            if idx >= 0
-        }
+        # Retrieve every indexed chunk so hybrid ranking can compare
+        # semantic similarity and lexical relevance consistently.
+        similarities, indices = self.index.search(
+            query_embedding,
+            len(self.chunks),
+        )
 
-        # 2. Tokenize the query and remove common question words.
-        query_tokens = self._tokenize(query) - self.STOP_WORDS
-        print("\nQuery tokens used:", sorted(query_tokens))
-
+        query_tokens = self._tokenize(query)
         results = []
 
-        # 3. Calculate keyword and combined relevance scores.
-        for idx, chunk in enumerate(self.chunks):
+        for semantic_score, idx in zip(
+            similarities[0],
+            indices[0],
+        ):
+            if idx < 0:
+                continue
+
+            chunk = self.chunks[int(idx)]
             chunk_tokens = self._tokenize(chunk["text"])
-            matched_tokens = query_tokens & chunk_tokens
-            print(f"Chunk {idx} | Matched: {sorted(matched_tokens)}")
 
-            keyword_score = (
-                len(matched_tokens) / len(query_tokens)
-                if query_tokens else 0.0
-            )
+            matched_keywords = sorted(query_tokens & chunk_tokens)
 
-            semantic_score = semantic_scores.get(idx, 0.0)
+            if query_tokens:
+                keyword_score = (
+                    len(matched_keywords) / len(query_tokens)
+                )
+            else:
+                keyword_score = 0.0
+
+            # Ignore negative cosine scores when combining with keyword
+            # relevance; preserve the raw score for diagnostics.
+            semantic_component = max(float(semantic_score), 0.0)
 
             combined_score = (
-                0.7 * semantic_score
-                + 0.3 * keyword_score
+                0.75 * semantic_component
+                + 0.25 * keyword_score
             )
 
-            result = dict(chunk)
-            result["similarity_score"] = semantic_score
-            result["keyword_score"] = keyword_score
-            result["combined_score"] = combined_score
-            result["matched_keywords"] = sorted(matched_tokens)
+            results.append({
+                **chunk,
+                "similarity_score": float(semantic_score),
+                "keyword_score": float(keyword_score),
+                "combined_score": float(combined_score),
+                "matched_keywords": matched_keywords,
+            })
 
-            results.append(result)
-
-        # 4. Return the highest-ranked chunks first.
         results.sort(
             key=lambda item: item["combined_score"],
-            reverse=True
+            reverse=True,
         )
 
         return results[:min(top_k, len(results))]

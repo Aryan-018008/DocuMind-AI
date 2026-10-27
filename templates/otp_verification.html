@@ -1,0 +1,296 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Verify Email - DocuMind AI</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary: #4169e1;
+            --primary-dark: #3154c8;
+            --text: #172033;
+            --muted: #68748b;
+            --border: #e0e6f0;
+            --bg: #f4f7fc;
+        }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        header {
+            padding: 24px 7%;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 11px;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 21px;
+            font-weight: 800;
+            letter-spacing: -0.6px;
+        }
+
+        .brand-icon {
+            display: grid;
+            place-items: center;
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            color: white;
+            border-radius: 12px;
+            font-size: 21px;
+        }
+
+        main {
+            flex: 1;
+            display: grid;
+            place-items: center;
+            padding: 24px 16px 48px;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 450px;
+            padding: 36px;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            box-shadow: 0 18px 55px rgba(31, 52, 95, 0.08);
+        }
+
+        .icon {
+            display: grid;
+            place-items: center;
+            width: 58px;
+            height: 58px;
+            margin-bottom: 22px;
+            border-radius: 17px;
+            background: #edf2ff;
+            font-size: 27px;
+        }
+
+        h1 {
+            margin-bottom: 12px;
+            font-size: clamp(26px, 5vw, 31px);
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 25px;
+            overflow-wrap: anywhere;
+        }
+
+        .email {
+            color: var(--text);
+            font-weight: 700;
+        }
+
+        .flash-message {
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .flash-message.error {
+            color: #a52626;
+            background: #fff0f0;
+            border: 1px solid #ffd4d4;
+        }
+
+        .flash-message.success {
+            color: #176b3a;
+            background: #ecfdf3;
+            border: 1px solid #b9f0cd;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 9px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            min-height: 56px;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            outline: none;
+            font-family: inherit;
+            font-size: 23px;
+            font-weight: 700;
+            letter-spacing: 10px;
+            text-align: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(65, 105, 225, 0.12);
+        }
+
+        .hint {
+            margin-top: 9px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.6;
+        }
+
+        button {
+            width: 100%;
+            min-height: 49px;
+            margin-top: 22px;
+            border: none;
+            border-radius: 10px;
+            background: var(--primary);
+            color: white;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+        }
+
+        .back-link {
+            display: block;
+            margin-top: 23px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        footer {
+            padding: 18px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 12px;
+        }
+
+        @media (max-width: 480px) {
+            header {
+                padding: 18px 20px;
+            }
+
+            main {
+                padding: 12px 14px 30px;
+            }
+
+            .card {
+                padding: 27px 21px;
+                border-radius: 17px;
+            }
+
+            input {
+                letter-spacing: 7px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <a class="brand" href="{{ url_for('auth.signup') }}">
+            <span class="brand-icon">D</span>
+            <span>DocuMind AI</span>
+        </a>
+    </header>
+
+    <main>
+        <section class="card">
+            <div class="icon" aria-hidden="true">✉️</div>
+
+            <h1>Verify your email</h1>
+
+            <p class="subtitle">
+                We've sent a 6-digit verification code to
+                <span class="email">{{ email }}</span>.
+                Enter the code below to activate your account.
+            </p>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" action="{{ url_for('auth.verify_otp') }}">
+                <label for="otp">Verification code</label>
+
+                <input
+                    type="text"
+                    id="otp"
+                    name="otp"
+                    placeholder="000000"
+                    inputmode="numeric"
+                    pattern="[0-9]{6}"
+                    minlength="6"
+                    maxlength="6"
+                    autocomplete="one-time-code"
+                    aria-describedby="otp-hint"
+                    required
+                    autofocus
+                >
+
+                <p class="hint" id="otp-hint">
+                    The code expires in 5 minutes. Never share it with anyone.
+                </p>
+
+                <button type="submit">Verify email →</button>
+            </form>
+
+            <a class="back-link" href="{{ url_for('auth.signup') }}">
+                ← Back to signup
+            </a>
+        </section>
+    </main>
+
+    <footer>
+        © 2026 DocuMind AI · Secure email verification.
+    </footer>
+</body>
+</html>

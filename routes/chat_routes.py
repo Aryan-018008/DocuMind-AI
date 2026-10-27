@@ -29,26 +29,52 @@ def chat():
             "error": "Please provide the PDF filename."
         }), 400
 
-    # Prevent directory traversal; accept a filename only.
+    # Prevent directory traversal.
     if os.path.basename(filename) != filename:
+        return jsonify({
+            "error": "Invalid PDF filename."
+        }), 400
+
+    if not filename.lower().endswith(".pdf"):
         return jsonify({
             "error": "Invalid PDF filename."
         }), 400
 
     upload_folder = current_app.config["UPLOAD_FOLDER"]
     pdf_path = os.path.join(upload_folder, filename)
-    print("\n--- PDF DEBUG ---")
-    print("Received filename:", repr(filename))
-    print("UPLOAD_FOLDER:", repr(upload_folder))
-    print("Resolved path:", os.path.abspath(pdf_path))
-    print("File exists:", os.path.isfile(pdf_path))
-    print("Files in upload folder:", os.listdir(upload_folder))
-    print("-----------------\n")
 
-    if not os.path.isfile(pdf_path) or not filename.lower().endswith(".pdf"):
+    if not os.path.isfile(pdf_path):
         return jsonify({
             "error": "PDF not found in uploads."
         }), 404
+
+    # Handle simple greetings and thanks without running RAG.
+    normalized_question = question.lower().strip()
+    normalized_question = normalized_question.rstrip("!.,? ")
+
+    greetings = {
+        "hi", "hello", "hey", "hii", "hiii",
+        "good morning", "good afternoon", "good evening"
+    }
+
+    thanks_messages = {
+        "thank you", "thanks", "thank you so much",
+        "thanks a lot", "thx", "ty"
+    }
+
+    if normalized_question in greetings:
+        return jsonify({
+            "answer": "Hello!  I'm DocuMind AI Assistant. Ask me anything about your selected PDF.",
+            "sources": [],
+            "filename": filename
+        }), 200
+
+    if normalized_question in thanks_messages:
+        return jsonify({
+            "answer": "You're welcome!  Feel free to ask another question about your PDF.",
+            "sources": [],
+            "filename": filename
+        }), 200
 
     try:
         # Extract PDF text and generate chunks.

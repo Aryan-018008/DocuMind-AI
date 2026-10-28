@@ -1,0 +1,3087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f7f9fc" />
+  <title>Dashbord-DocuMind AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./Style.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+     :root {
+     --bg: #f7f9fc;
+     --surface: #ffffff;
+     --surface-soft: #f8fafc;
+     --text: #10203d;
+     --muted: #6c7e9e;
+     --muted-2: #93a1b8;
+     --border: #dce5f0;
+     --teal: #0c7c73;
+     --teal-dark: #096c65;
+     --teal-soft: #e6f5f2;
+     --navy: #172957;
+     --shadow: 0 4px 14px rgba(24, 48, 83, .045);
+ }
+
+ * {
+     box-sizing: border-box;
+ }
+
+ html {
+     scroll-behavior: smooth;
+ }
+
+ body {
+     margin: 0;
+     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+     color: var(--text);
+     background: var(--bg);
+     font-size: 14px;
+ }
+
+ html,
+body {
+    margin: 0;
+    min-height: 100%;
+}
+
+.app-shell {
+    min-height: 100vh;
+}
+
+
+
+.topbar {
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+ button,
+ input {
+     font: inherit;
+ }
+
+ button {
+     cursor: pointer;
+ }
+
+ button:focus-visible,
+ input:focus-visible,
+ .dropzone:focus-visible {
+     outline: 3px solid rgba(12, 124, 115, .22);
+     outline-offset: 2px;
+ }
+
+ a {
+     color: inherit;
+     text-decoration: none;
+ }
+
+ .app-shell {
+     min-height: 100vh;
+ }
+
+ .sidebar {
+    width: 311px;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    padding: 38px 23px 0;
+    padding-bottom: 16px;
+    height: 100vh;
+    height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+}
+
+ /* .sidebar {
+    height: 100vh;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    padding-bottom: 16px;
+} */
+
+ .brand {
+     display: flex;
+     align-items: center;
+     gap: 13px;
+     margin: 0 12px 52px;
+     white-space: nowrap;
+ }
+
+ .brand-mark {
+     display: grid;
+     place-items: center;
+     width: 40px;
+     height: 40px;
+     border-radius: 13px;
+     color: white;
+     background: linear-gradient(140deg, #20325e, #087d73);
+     box-shadow: 0 7px 17px rgba(12, 124, 115, .17);
+ }
+
+ .brand-mark svg {
+     width: 22px;
+     height: 22px;
+     stroke-width: 2.3;
+ }
+
+ .brand-name {
+     font-size: 20px;
+     font-weight: 750;
+     letter-spacing: -.7px;
+ }
+
+ .brand-name b {
+     color: var(--teal);
+ }
+
+ .nav-label {
+     margin: 0 15px 15px;
+     color: #8d9cb4;
+     font-size: 11px;
+     letter-spacing: 1.6px;
+     font-weight: 800;
+ }
+
+ .main-nav {
+     display: grid;
+     gap: 7px;
+ }
+
+ .nav-item {
+     border: 0;
+     background: transparent;
+     color: #58708f;
+     min-height: 55px;
+     border-radius: 13px;
+     display: flex;
+     align-items: center;
+     gap: 16px;
+     padding: 0 16px;
+     text-align: left;
+     font-size: 16px;
+     transition: background .18s, color .18s;
+ }
+
+ .nav-item svg {
+     width: 20px;
+     height: 20px;
+     stroke-width: 1.8;
+     flex-shrink: 0;
+ }
+
+ .nav-item:hover {
+     background: var(--surface-soft);
+     color: var(--teal);
+ }
+
+ .nav-item.active {
+     color: #087d76;
+     background: #e6f5f2;
+     font-weight: 600;
+ }
+
+ .nav-tag {
+     margin-left: auto;
+     padding: 4px 8px;
+     border: 1px solid #b8dcd7;
+     border-radius: 6px;
+     font-size: 10px;
+     font-weight: 700;
+ }
+
+ .secondary-label {
+     margin-top: 31px;
+ }
+
+ .usage-card {
+     margin: auto 9px 22px;
+     padding: 19px 17px 18px;
+     border: 1px solid var(--border);
+     border-radius: 13px;
+ }
+
+ .usage-heading {
+     display: flex;
+     justify-content: space-between;
+     gap: 8px;
+     color: var(--muted);
+     font-size: 13px;
+ }
+
+ .usage-heading strong {
+     color: var(--text);
+     font-size: 12px;
+ }
+
+ .usage-track {
+     height: 7px;
+     margin: 15px 0 10px;
+     background: #e0e7f0;
+     border-radius: 20px;
+     overflow: hidden;
+ }
+
+ .usage-track span {
+     display: block;
+     width: 35%;
+     height: 100%;
+     border-radius: inherit;
+     background: var(--teal);
+ }
+
+ .usage-card p {
+     margin: 0;
+     color: var(--muted-2);
+     font-size: 12px;
+ }
+
+ .profile-area {
+     display: flex;
+     align-items: center;
+     gap: 12px;
+     padding: 18px 10px 20px;
+     border-top: 1px solid var(--border);
+     flex-shrink: 0;
+     min-width: 0;
+ }
+
+ .avatar {
+     width: 44px;
+     height: 44px;
+     display: grid;
+     place-items: center;
+     flex-shrink: 0;
+     border-radius: 50%;
+     color: #075d7e;
+     background: #d6f0fa;
+     font-weight: 700;
+     font-size: 13px;
+ }
+
+ .profile-copy {
+     display: grid;
+     min-width: 0;
+     gap: 5px;
+     flex: 1;
+     overflow: hidden;
+ }
+
+ .profile-copy strong {
+     font-size: 13px;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     white-space: nowrap ;
+ }
+
+ .profile-copy span {
+     color: var(--muted-2);
+     font-size: 11px;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+
+ }
+
+ .icon-button {
+     position: relative;
+     display: grid;
+     place-items: center;
+     width: 49px;
+     height: 49px;
+     flex-shrink: 0;
+     color: #5f7292;
+     border: 1px solid var(--border);
+     background: var(--surface);
+     border-radius: 12px;
+     transition: .2s;
+ }
+
+ .icon-button:hover {
+     color: var(--teal);
+     border-color: #b6d8d3;
+     background: var(--surface-soft);
+ }
+
+ .icon-button svg {
+     width: 20px;
+     height: 20px;
+ }
+
+ .profile-menu {
+     margin-left: auto;
+     width: 30px;
+     height: 34px;
+     border: 0;
+ }
+
+ .main-area {
+     margin-left: 311px;
+     min-height: 100vh;
+ }
+
+ .topbar {
+     min-height: 126px;
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 22px;
+     padding: 24px 19px 24px 50px;
+     background: var(--surface);
+     border-bottom: 1px solid var(--border);
+ }
+
+ .welcome-copy h1 {
+     margin: 0 0 10px;
+     font-size: 25px;
+     font-weight: 700;
+     letter-spacing: -.8px;
+ }
+
+ .welcome-copy p {
+     margin: 0;
+     color: var(--muted);
+     font-size: 14px;
+     letter-spacing: .05px;
+ }
+
+ .top-actions {
+     display: flex;
+     align-items: center;
+     gap: 13px;
+ }
+
+ .search-box {
+     display: flex;
+     align-items: center;
+     gap: 11px;
+     height: 49px;
+     padding: 0 14px;
+     color: #637795;
+     border: 1px solid var(--border);
+     border-radius: 12px;
+     background: var(--surface);
+ }
+
+ .search-box svg {
+     width: 19px;
+     height: 19px;
+     flex-shrink: 0;
+ }
+
+ .search-box input {
+     width: 100%;
+     min-width: 0;
+     border: 0;
+     outline: 0;
+     background: transparent;
+     color: var(--text);
+ }
+
+ .search-box input::placeholder {
+     color: #91a0b7;
+ }
+
+ .topbar .search-box {
+     width: 49px;
+     padding: 0;
+     justify-content: center;
+     cursor: text;
+     transition: width .2s;
+ }
+
+ .topbar .search-box input,
+ .topbar .search-box kbd {
+     display: none;
+ }
+
+ .topbar .search-box.expanded {
+     width: 250px;
+     padding: 0 13px;
+     justify-content: flex-start;
+ }
+
+ .topbar .search-box.expanded input {
+     display: block;
+ }
+
+ .topbar .search-box.expanded kbd {
+     display: none;
+ }
+
+ kbd {
+     color: var(--muted-2);
+     border: 1px solid var(--border);
+     border-radius: 5px;
+     padding: 2px 4px;
+     font-size: 10px;
+ }
+
+ .notification-dot {
+     position: absolute;
+     top: 10px;
+     right: 10px;
+     width: 6px;
+     height: 6px;
+     background: #e34d58;
+     border-radius: 50%;
+     box-shadow: 0 0 0 2px var(--surface);
+ }
+
+ .primary-button {
+     min-height: 49px;
+     padding: 0 22px;
+     display: inline-flex;
+     align-items: center;
+     justify-content: center;
+     gap: 10px;
+     color: #fff;
+     background: var(--teal);
+     border: 1px solid var(--teal);
+     border-radius: 11px;
+     font-weight: 650;
+     box-shadow: 0 3px 7px rgba(8, 109, 100, .12);
+     transition: transform .15s, background .15s;
+ }
+
+ .primary-button:hover {
+     background: var(--teal-dark);
+     transform: translateY(-1px);
+ }
+
+ .primary-button:disabled {
+     opacity: .45;
+     cursor: not-allowed;
+     transform: none;
+ }
+
+ .primary-button svg {
+     width: 19px;
+     height: 19px;
+ }
+
+ .mobile-menu {
+     display: none;
+ }
+
+ .page-content {
+     max-width: 1500px;
+     margin: 0 auto;
+     padding: 37px 19px 60px 50px;
+ }
+
+ .page-view {
+     display: none;
+     animation: pageIn .22s ease;
+ }
+
+ .page-view.active {
+     display: block;
+ }
+
+ @keyframes pageIn {
+     from {
+         opacity: 0;
+         transform: translateY(4px);
+     }
+
+     to {
+         opacity: 1;
+         transform: translateY(0);
+     }
+ }
+
+ .hero-card {
+     position: relative;
+     isolation: isolate;
+     min-height: 369px;
+     display: flex;
+     align-items: center;
+     overflow: hidden;
+     padding: 45px 58px;
+     border-radius: 21px;
+     color: #fff;
+     background: linear-gradient(112deg, #192957 0%, #1c456a 62%, #0e6265 100%);
+     box-shadow: 0 4px 8px rgba(20, 48, 76, .08);
+ }
+
+ .hero-content {
+     position: relative;
+     z-index: 2;
+     width: 68%;
+     max-width: 650px;
+ }
+
+ .eyebrow {
+     display: flex;
+     align-items: center;
+     gap: 9px;
+     margin-bottom: 23px;
+     color: #93f4d7;
+     font-size: 12px;
+     font-weight: 800;
+     letter-spacing: 1.05px;
+ }
+
+ .eyebrow svg {
+     width: 16px;
+     height: 16px;
+ }
+
+ .hero-content h2 {
+     margin: 0 0 16px;
+     font-size: clamp(27px, 2.8vw, 38px);
+     line-height: 1.18;
+     font-weight: 500;
+     letter-spacing: -1.3px;
+ }
+
+ .hero-content p {
+     max-width: 600px;
+     margin: 0 0 27px;
+     color: #e0e9f6;
+     font-size: 15px;
+     line-height: 1.75;
+ }
+
+ .hero-button {
+     display: inline-flex;
+     align-items: center;
+     gap: 12px;
+     min-height: 49px;
+     padding: 0 22px;
+     color: #15274b;
+     background: white;
+     border: 0;
+     border-radius: 11px;
+     font-weight: 650;
+     transition: transform .15s, box-shadow .15s;
+ }
+
+ .hero-button:hover {
+     transform: translateY(-2px);
+     box-shadow: 0 8px 20px #091a3530;
+ }
+
+ .hero-button svg {
+     width: 18px;
+     height: 18px;
+ }
+
+ .hero-orbit {
+     position: absolute;
+     z-index: -1;
+     border: 1px solid #ffffff12;
+     border-radius: 50%;
+ }
+
+ .orbit-one {
+     width: 480px;
+     height: 480px;
+     right: -115px;
+     top: -250px;
+ }
+
+ .orbit-two {
+     width: 330px;
+     height: 330px;
+     right: 180px;
+     bottom: -265px;
+ }
+
+ .hero-visual {
+     position: absolute;
+     right: 8%;
+     top: 50%;
+     width: 260px;
+     height: 260px;
+     transform: translateY(-50%);
+ }
+
+ .document-illustration {
+     position: absolute;
+     top: 19px;
+     left: 36px;
+     width: 194px;
+     height: 226px;
+     padding: 29px 22px;
+     border-radius: 13px;
+     background: #f4f7fa;
+     box-shadow: 0 22px 35px #071b3d2b;
+     transform: rotate(3deg);
+ }
+
+ .pdf-pill {
+     display: grid;
+     place-items: center;
+     width: 37px;
+     height: 25px;
+     margin-bottom: 23px;
+     color: #db3340;
+     background: #ffe4e6;
+     border-radius: 6px;
+     font-size: 9px;
+     font-weight: 800;
+ }
+
+ .doc-line {
+     height: 7px;
+     margin-bottom: 8px;
+     border-radius: 5px;
+     background: #cbd5e1;
+ }
+
+ .line-long {
+     width: 100%;
+     background: #9aa9bf;
+ }
+
+ .line-medium {
+     width: 76%;
+ }
+
+ .line-short {
+     width: 56%;
+ }
+
+ .summary-pill {
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     gap: 7px;
+     height: 36px;
+     margin-top: 27px;
+     color: #087c75;
+     background: #e5f5f2;
+     border-radius: 7px;
+     font-size: 9px;
+     font-weight: 700;
+ }
+
+ .summary-pill svg {
+     width: 14px;
+     height: 14px;
+ }
+
+ .float-dot {
+     position: absolute;
+     width: 8px;
+     height: 8px;
+     border-radius: 50%;
+     background: #34d4bd;
+ }
+
+ .dot-a {
+     left: 9px;
+     bottom: 62px;
+ }
+
+ .dot-b {
+     right: 12px;
+     top: 26px;
+ }
+
+ .dot-c {
+     left: 15px;
+     top: 111px;
+     width: 6px;
+     height: 6px;
+     background: #8dc4ff;
+ }
+
+ .stats-grid {
+     display: grid;
+     grid-template-columns: repeat(3, minmax(0, 1fr));
+     gap: 20px;
+     margin-top: 25px;
+ }
+
+ .stat-card {
+     min-height: 162px;
+     padding: 30px 29px 22px;
+     border: 1px solid var(--border);
+     border-radius: 16px;
+     background: var(--surface);
+     box-shadow: var(--shadow);
+ }
+
+ .stat-top {
+     margin-bottom: 7px;
+     color: var(--muted);
+     text-align: center;
+     font-size: 13px;
+ }
+
+ .stat-main {
+     display: flex;
+     align-items: center;
+     gap: 21px;
+     padding-left: 0;
+ }
+
+ .stat-main strong {
+     font-size: 29px;
+     font-weight: 500;
+     letter-spacing: -1px;
+     color: #071c3b;
+ }
+
+ .stat-icon {
+     width: 54px;
+     height: 54px;
+     display: grid;
+     place-items: center;
+     border-radius: 14px;
+ }
+
+ .stat-icon svg {
+     width: 21px;
+     height: 21px;
+ }
+
+ .mint {
+     color: #078178;
+     background: #e6f6f2;
+ }
+
+ .lavender {
+     color: #243d80;
+     background: #edf0ff;
+ }
+
+ .amber {
+     color: #c76c00;
+     background: #fff6e5;
+ }
+
+ .stat-foot {
+     margin: 6px 0 0 75px;
+     color: var(--muted-2);
+     font-size: 11px;
+ }
+
+ .trend {
+     color: #087d75;
+     font-weight: 800;
+ }
+
+ .section-block {
+     margin-top: 39px;
+ }
+
+ .section-heading {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 18px;
+     margin-bottom: 18px;
+ }
+
+ .section-heading h3,
+ .section-heading h2 {
+     margin: 0 0 7px;
+     font-size: 20px;
+     letter-spacing: -.5px;
+ }
+
+ .section-heading p {
+     margin: 0;
+     color: var(--muted);
+     font-size: 13px;
+ }
+
+ .text-button {
+     display: inline-flex;
+     align-items: center;
+     gap: 7px;
+     padding: 8px 0;
+     color: var(--teal);
+     background: none;
+     border: 0;
+     font-weight: 650;
+ }
+
+ .text-button svg {
+     width: 16px;
+     height: 16px;
+ }
+
+ .document-list {
+     display: grid;
+     gap: 12px;
+ }
+
+ .document-row {
+     display: flex;
+     align-items: center;
+     gap: 15px;
+     min-width: 0;
+     padding: 17px 19px;
+     border: 1px solid var(--border);
+     border-radius: 13px;
+     background: var(--surface);
+     box-shadow: var(--shadow);
+ }
+
+ .file-icon {
+     display: grid;
+     place-items: center;
+     width: 45px;
+     height: 49px;
+     flex-shrink: 0;
+     color: #d84c56;
+     background: #fff0f1;
+     border-radius: 10px;
+ }
+
+ .file-icon svg {
+     width: 22px;
+     height: 22px;
+ }
+
+ .document-meta {
+     flex: 1;
+     min-width: 0;
+ }
+
+ .document-meta strong {
+     display: block;
+     margin-bottom: 6px;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+     font-size: 13px;
+ }
+
+ .document-meta span {
+     color: var(--muted-2);
+     font-size: 11px;
+ }
+
+ .doc-status {
+     padding: 6px 9px;
+     color: #087b69;
+     background: #e6f7f1;
+     border-radius: 7px;
+     font-size: 10px;
+     font-weight: 700;
+     white-space: nowrap;
+ }
+
+ .row-action {
+     display: grid;
+     place-items: center;
+     width: 35px;
+     height: 35px;
+     color: var(--muted);
+     background: transparent;
+     border: 0;
+     border-radius: 8px;
+ }
+
+ .row-action:hover {
+     background: var(--surface-soft);
+     color: var(--teal);
+ }
+
+ .row-action svg {
+     width: 18px;
+     height: 18px;
+ }
+
+ .page-heading {
+     margin: 7px 0 26px;
+ }
+
+ .section-kicker {
+     color: var(--teal);
+     font-size: 11px;
+     font-weight: 800;
+     letter-spacing: 1.4px;
+ }
+
+ .page-heading h2,
+ .page-heading-row h2 {
+     margin: 9px 0 8px;
+     font-size: 29px;
+     letter-spacing: -1px;
+ }
+
+ .page-heading p,
+ .page-heading-row p {
+     margin: 0;
+     color: var(--muted);
+     line-height: 1.6;
+ }
+
+ .upload-panel {
+     max-width: 900px;
+     padding: 25px;
+     border: 1px solid var(--border);
+     border-radius: 17px;
+     background: var(--surface);
+     box-shadow: var(--shadow);
+ }
+
+ .dropzone {
+     display: flex;
+     flex-direction: column;
+     align-items: center;
+     justify-content: center;
+     min-height: 320px;
+     padding: 30px;
+     text-align: center;
+     border: 1.5px dashed #bfd1df;
+     border-radius: 14px;
+     background: var(--surface-soft);
+     transition: .2s;
+     cursor: pointer;
+ }
+
+ .dropzone.dragover {
+     border-color: var(--teal);
+     background: var(--teal-soft);
+ }
+
+ .drop-icon {
+     display: grid;
+     place-items: center;
+     width: 64px;
+     height: 64px;
+     margin-bottom: 18px;
+     color: var(--teal);
+     background: var(--teal-soft);
+     border-radius: 18px;
+ }
+
+ .drop-icon svg {
+     width: 28px;
+     height: 28px;
+ }
+
+ .dropzone h3 {
+     margin: 0 0 10px;
+     font-size: 17px;
+ }
+
+ .dropzone p {
+     margin: 0;
+     color: var(--muted);
+ }
+
+ .inline-link {
+     padding: 0;
+     color: var(--teal);
+     background: transparent;
+     border: 0;
+     font-weight: 700;
+ }
+
+ .file-hint {
+     margin-top: 17px;
+     color: var(--muted-2);
+     font-size: 11px;
+ }
+
+ .upload-actions {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 15px;
+     margin-top: 20px;
+ }
+
+ .privacy-note {
+     display: flex;
+     align-items: center;
+     gap: 7px;
+     color: var(--muted);
+     font-size: 12px;
+ }
+
+ .privacy-note svg {
+     width: 17px;
+     height: 17px;
+     color: var(--teal);
+ }
+
+ .demo-note {
+     margin: 18px 0 0;
+     color: var(--muted-2);
+     font-size: 11px;
+     text-align: center;
+ }
+
+ .upload-selection {
+     display: flex;
+     align-items: center;
+     gap: 12px;
+     margin-top: 16px;
+     padding: 14px;
+     background: var(--surface-soft);
+     border: 1px solid var(--border);
+     border-radius: 11px;
+ }
+
+ .upload-selection .selection-name {
+     flex: 1;
+     min-width: 0;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+     font-weight: 600;
+ }
+
+ .upload-selection .selection-size {
+     color: var(--muted);
+     font-size: 11px;
+ }
+
+ .hidden {
+     display: none !important;
+ }
+
+ .page-heading-row {
+     align-items: end;
+     margin: 7px 0 25px;
+ }
+
+ .page-heading-row h2 {
+     margin-top: 9px;
+ }
+
+ .filter-row {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 16px;
+     margin-bottom: 19px;
+ }
+
+ .library-search {
+     flex: 1;
+     max-width: 440px;
+ }
+
+ .result-count {
+     color: var(--muted);
+     font-size: 12px;
+ }
+
+ .workspace-layout {
+     display: grid;
+     grid-template-columns: 260px minmax(0, 1fr);
+     gap: 18px;
+     align-items: stretch;
+     min-height: 540px;
+ }
+
+ .workspace-docs,
+ .chat-panel,
+ .settings-card,
+ .faq-list {
+     background: var(--surface);
+     border: 1px solid var(--border);
+     border-radius: 15px;
+     box-shadow: var(--shadow);
+ }
+
+ .workspace-docs {
+     padding: 20px 15px;
+ }
+
+ .workspace-docs h3 {
+     margin: 0 0 7px;
+     font-size: 14px;
+ }
+
+ .muted {
+     color: var(--muted);
+     font-size: 12px;
+     line-height: 1.6;
+ }
+
+ .workspace-doc-button {
+     display: flex;
+     align-items: center;
+     gap: 9px;
+     width: 100%;
+     margin-top: 9px;
+     padding: 12px 9px;
+     color: var(--text);
+     text-align: left;
+     background: transparent;
+     border: 1px solid transparent;
+     border-radius: 9px;
+ }
+
+ .workspace-doc-button:hover,
+ .workspace-doc-button.selected {
+     background: var(--teal-soft);
+     border-color: #cce8e3;
+ }
+
+ .workspace-doc-button svg {
+     width: 18px;
+     height: 18px;
+     color: #d84c56;
+     flex-shrink: 0;
+ }
+
+ .workspace-doc-button span {
+     overflow: hidden;
+     text-overflow: ellipsis;
+     white-space: nowrap;
+     font-size: 11px;
+ }
+
+ .chat-panel {
+     display: flex;
+     flex-direction: column;
+     min-height: 540px;
+     overflow: hidden;
+ }
+
+ .chat-header {
+     display: flex;
+     align-items: center;
+     gap: 11px;
+     padding: 17px 20px;
+     border-bottom: 1px solid var(--border);
+ }
+
+ .chat-avatar {
+     display: grid;
+     place-items: center;
+     width: 39px;
+     height: 39px;
+     color: var(--teal);
+     background: var(--teal-soft);
+     border-radius: 12px;
+ }
+
+ .chat-avatar svg {
+     width: 20px;
+ }
+
+ .chat-header strong,
+ .chat-header span:not(.chat-avatar):not(.online-indicator) {
+     display: block;
+ }
+
+ .chat-header strong {
+     margin-bottom: 5px;
+     font-size: 12px;
+ }
+
+ .chat-header div span {
+     color: var(--muted);
+     font-size: 10px;
+ }
+
+ .online-indicator {
+     width: 8px;
+     height: 8px;
+     margin-left: auto;
+     background: #20b486;
+     border-radius: 50%;
+ }
+
+ .chat-messages {
+     flex: 1;
+     display: flex;
+     flex-direction: column;
+     align-items: stretch;
+     gap: 15px;
+     padding: 22px;
+     overflow-y: auto;
+ }
+
+ .assistant-message {
+     display: flex;
+     align-items: flex-start;
+     gap: 10px;
+     max-width: 95%;
+ }
+
+ .message-spark {
+     display: grid;
+     place-items: center;
+     width: 29px;
+     height: 29px;
+     flex-shrink: 0;
+     color: var(--teal);
+     background: var(--teal-soft);
+     border-radius: 9px;
+ }
+
+ .message-spark svg {
+     width: 15px;
+ }
+
+ .assistant-message strong {
+     display: block;
+     margin: 3px 0 7px;
+     font-size: 12px;
+ }
+
+ .assistant-message p {
+     margin: 0;
+     color: var(--muted);
+     font-size: 12px;
+     line-height: 1.7;
+ }
+
+ .user-message {
+     align-self: flex-end;
+     max-width: 85%;
+     padding: 12px 15px;
+     color: white;
+     background: var(--teal);
+     border-radius: 13px 13px 3px 13px;
+     font-size: 12px;
+     line-height: 1.6;
+ }
+
+ .bot-response {
+     padding: 13px 15px;
+     background: var(--surface-soft);
+     border: 1px solid var(--border);
+     border-radius: 4px 13px 13px 13px;
+     color: var(--muted);
+     font-size: 12px;
+     line-height: 1.7;
+ }
+
+ .suggestion-list {
+     display: flex;
+     flex-wrap: wrap;
+     gap: 7px;
+     margin-top: 13px;
+ }
+
+ .suggestion-chip {
+     padding: 8px 10px;
+     color: var(--teal);
+     background: var(--surface);
+     border: 1px solid #cce3df;
+     border-radius: 9px;
+     font-size: 10px;
+ }
+
+ .suggestion-chip:hover {
+     background: var(--teal-soft);
+ }
+
+ .chat-composer {
+     display: flex;
+     gap: 10px;
+     margin: 0 18px;
+     padding: 8px 8px 8px 15px;
+     border: 1px solid var(--border);
+     border-radius: 12px;
+ }
+
+ .chat-composer input {
+     flex: 1;
+     min-width: 0;
+     color: var(--text);
+     background: transparent;
+     border: 0;
+     outline: 0;
+     font-size: 12px;
+ }
+
+ .chat-composer input::placeholder {
+     color: var(--muted-2);
+ }
+
+ .chat-composer button {
+     display: grid;
+     place-items: center;
+     width: 36px;
+     height: 36px;
+     color: white;
+     background: var(--teal);
+     border: 0;
+     border-radius: 9px;
+ }
+
+ .chat-composer button svg {
+     width: 18px;
+ }
+
+ .chat-disclaimer {
+     margin: 10px 18px 14px;
+     color: var(--muted-2);
+     text-align: center;
+     font-size: 10px;
+ }
+
+ .settings-card {
+     display: flex;
+     align-items: center;
+     justify-content: space-between;
+     gap: 20px;
+     max-width: 850px;
+     margin-bottom: 13px;
+     padding: 22px;
+ }
+
+ .settings-card h3 {
+     margin: 0 0 7px;
+     font-size: 14px;
+ }
+
+ .settings-card p {
+     margin: 0;
+     color: var(--muted);
+     font-size: 12px;
+     line-height: 1.6;
+ }
+
+ .status-pill {
+     padding: 7px 10px;
+     color: var(--teal);
+     background: var(--teal-soft);
+     border-radius: 8px;
+     font-size: 10px;
+     font-weight: 700;
+ }
+
+ .settings-end-icon {
+     width: 22px;
+     color: var(--teal);
+ }
+
+ .toggle-row {
+     position: relative;
+     display: flex;
+     align-items: center;
+     gap: 11px;
+     cursor: pointer;
+ }
+
+ .toggle-row>span:first-child {
+     display: flex;
+     align-items: center;
+     gap: 8px;
+     font-size: 12px;
+ }
+
+ .toggle-row svg {
+     width: 17px;
+ }
+
+ .toggle-row input {
+     position: absolute;
+     opacity: 0;
+ }
+
+ .toggle-switch {
+     position: relative;
+     width: 40px;
+     height: 23px;
+     border-radius: 30px;
+     background: #cbd5e1;
+     transition: .2s;
+ }
+
+ .toggle-switch::after {
+     content: "";
+     position: absolute;
+     top: 3px;
+     left: 3px;
+     width: 17px;
+     height: 17px;
+     border-radius: 50%;
+     background: white;
+     transition: .2s;
+     box-shadow: 0 1px 3px #0002;
+ }
+
+ .toggle-row input:checked+.toggle-switch {
+     background: var(--teal);
+ }
+
+ .toggle-row input:checked+.toggle-switch::after {
+     transform: translateX(17px);
+ }
+
+ .faq-list {
+     max-width: 850px;
+     padding: 0 22px;
+ }
+
+ .faq-list details {
+     padding: 20px 0;
+     border-bottom: 1px solid var(--border);
+ }
+
+ .faq-list details:last-child {
+     border-bottom: 0;
+ }
+
+ .faq-list summary {
+     cursor: pointer;
+     font-weight: 650;
+     font-size: 13px;
+ }
+
+ .faq-list details p {
+     margin: 12px 0 0;
+     color: var(--muted);
+     font-size: 12px;
+     line-height: 1.7;
+ }
+
+ .empty-state {
+     padding: 55px 20px;
+     text-align: center;
+     color: var(--muted);
+ }
+
+ .empty-state>svg {
+     width: 34px;
+     height: 34px;
+     color: var(--muted-2);
+ }
+
+ .empty-state h3 {
+     color: var(--text);
+ }
+
+ .toast-region {
+     position: fixed;
+     z-index: 100;
+     right: 22px;
+     bottom: 22px;
+     display: grid;
+     gap: 9px;
+ }
+
+
+ .toast {
+     display: flex;
+     align-items: center;
+     gap: 10px;
+     max-width: min(370px, calc(100vw - 36px));
+     padding: 14px 17px;
+     color: var(--text);
+     background: var(--surface);
+     border: 1px solid var(--border);
+     border-radius: 12px;
+     box-shadow: 0 12px 35px #10203d1a;
+     animation: pageIn .2s ease;
+ }
+
+ .toast svg {
+     width: 18px;
+     color: var(--teal);
+     flex-shrink: 0;
+ }
+
+ .toast span {
+     font-size: 12px;
+     line-height: 1.5;
+ }
+
+ .modal-backdrop {
+     position: fixed;
+     z-index: 90;
+     inset: 0;
+     display: grid;
+     place-items: center;
+     padding: 20px;
+     background: #0e1c36a6;
+     backdrop-filter: blur(4px);
+ }
+
+ .modal-card {
+     position: relative;
+     width: min(100%, 440px);
+     padding: 32px;
+     text-align: center;
+     color: var(--text);
+     background: var(--surface);
+     border-radius: 19px;
+     box-shadow: 0 20px 60px #071a3b30;
+ }
+
+ .modal-close {
+     position: absolute;
+     top: 14px;
+     right: 14px;
+     display: grid;
+     place-items: center;
+     width: 34px;
+     height: 34px;
+     color: var(--muted);
+     background: transparent;
+     border: 0;
+     border-radius: 8px;
+ }
+
+ .modal-close svg {
+     width: 18px;
+ }
+
+ .modal-icon {
+     display: grid;
+     place-items: center;
+     width: 54px;
+     height: 54px;
+     margin: 0 auto 18px;
+     color: var(--teal);
+     background: var(--teal-soft);
+     border-radius: 16px;
+ }
+
+ .modal-icon svg {
+     width: 24px;
+ }
+
+ .modal-card h2 {
+     margin: 0 0 10px;
+     font-size: 20px;
+ }
+
+ .modal-card p {
+     color: var(--muted);
+     font-size: 13px;
+     line-height: 1.7;
+ }
+
+ .modal-done {
+     margin-top: 12px;
+     width: 100%;
+ }
+
+ body.dark {
+     --bg: #0e1728;
+     --surface: #152238;
+     --surface-soft: #1b2a40;
+     --text: #edf3fb;
+     --muted: #a3b2c9;
+     --muted-2: #7f91ac;
+     --border: #2b3b52;
+     --teal-soft: #153d3c;
+     --shadow: 0 4px 14px rgba(0, 0, 0, .1);
+ }
+
+ body.dark .nav-item.active {
+     background: #173d3b;
+     color: #79ddd0;
+ }
+
+ body.dark .stat-main strong {
+     color: #f0f5ff;
+ }
+
+ body.dark .document-illustration {
+     background: #eef2f6;
+     color: #10203d;
+ }
+
+ body.dark .hero-button {
+     color: #15274b;
+ }
+
+ body.dark .dropzone {
+     background: #17263b;
+ }
+
+ body.dark .search-box input {
+     color: var(--text);
+ }
+
+ body.dark .usage-track {
+     background: #30415a;
+ }
+
+ @media (min-width: 1600px) {
+     .page-content {
+         padding-right: 40px;
+         padding-left: 50px;
+     }
+ }
+
+ @media (max-width: 1250px) {
+     .sidebar {
+         width: 265px;
+         padding-right: 17px;
+         padding-left: 17px;
+     }
+
+     .main-area {
+         margin-left: 265px;
+     }
+
+     .topbar {
+         padding-left: 30px;
+     }
+
+     .page-content {
+         padding-left: 30px;
+         padding-right: 25px;
+     }
+
+     .hero-card {
+         padding: 38px;
+     }
+
+     .hero-content {
+         width: 70%;
+     }
+
+     .hero-visual {
+         right: 2%;
+         transform: translateY(-50%) scale(.85);
+     }
+
+     .stat-card {
+         padding: 25px 20px 20px;
+     }
+
+     .stat-main {
+         gap: 14px;
+     }
+
+     .stat-foot {
+         margin-left: 67px;
+     }
+ }
+
+ @media (max-width: 980px) {
+     .sidebar {
+         width: 250px;
+         transform: translateX(-100%);
+         transition: transform .25s;
+         box-shadow: 15px 0 40px #10203d12;
+     }
+
+     .sidebar.open {
+         transform: translateX(0);
+     }
+
+     .main-area {
+         margin-left: 0;
+     }
+
+     .mobile-menu {
+         display: grid;
+     }
+
+     .topbar {
+         padding: 20px 24px;
+         min-height: 100px;
+     }
+
+     .welcome-copy {
+         flex: 1;
+     }
+
+     .page-content {
+         padding: 25px 24px 45px;
+     }
+
+     .hero-card {
+         min-height: 340px;
+         padding: 35px;
+     }
+
+     .hero-content {
+         width: 75%;
+     }
+
+     .hero-visual {
+         right: -3%;
+         transform: translateY(-50%) scale(.72);
+         opacity: .85;
+     }
+
+     .stats-grid {
+         gap: 12px;
+     }
+
+     .stat-card {
+         padding: 22px 15px;
+     }
+
+     .stat-main strong {
+         font-size: 25px;
+     }
+
+     .stat-foot {
+         margin-left: 0;
+         text-align: center;
+     }
+
+     .stat-icon {
+         width: 45px;
+         height: 45px;
+     }
+
+     .stat-top {
+         font-size: 11px;
+     }
+
+     .workspace-layout {
+         grid-template-columns: 210px minmax(0, 1fr);
+     }
+ }
+
+ @media (max-width: 680px) {
+     .topbar {
+         gap: 11px;
+         padding: 15px 16px;
+         min-height: 83px;
+     }
+
+     .welcome-copy h1 {
+         font-size: 18px;
+         margin-bottom: 5px;
+     }
+
+     .welcome-copy p {
+         max-width: 240px;
+         font-size: 11px;
+         line-height: 1.5;
+     }
+
+     .top-actions {
+         gap: 7px;
+     }
+
+     .topbar .search-box {
+         display: none;
+     }
+
+     .icon-button {
+         width: 39px;
+         height: 39px;
+         border-radius: 10px;
+     }
+
+     .icon-button svg {
+         width: 18px;
+     }
+
+     .top-upload {
+         width: 42px;
+         min-height: 39px;
+         padding: 0;
+         border-radius: 10px;
+     }
+
+     .top-upload span {
+         display: none;
+     }
+
+     .top-upload svg {
+         width: 20px;
+     }
+
+     .page-content {
+         padding: 19px 15px 35px;
+     }
+
+     .hero-card {
+         min-height: 410px;
+         align-items: flex-start;
+         padding: 29px 24px;
+         border-radius: 17px;
+     }
+
+     .hero-content {
+         width: 100%;
+     }
+
+     .eyebrow {
+         margin-bottom: 17px;
+         font-size: 10px;
+     }
+
+     .hero-content h2 {
+         max-width: 420px;
+         font-size: 29px;
+         letter-spacing: -.9px;
+     }
+
+     .hero-content p {
+         max-width: 390px;
+         font-size: 13px;
+         line-height: 1.65;
+     }
+
+     .desktop-break {
+         display: none;
+     }
+
+     .hero-button {
+         min-height: 45px;
+         padding: 0 16px;
+         font-size: 12px;
+     }
+
+     .hero-visual {
+         right: -7px;
+         top: auto;
+         bottom: -98px;
+         transform: scale(.55);
+         transform-origin: top right;
+         opacity: .38;
+     }
+
+     .stats-grid {
+         grid-template-columns: 1fr;
+         gap: 11px;
+         margin-top: 15px;
+     }
+
+     .stat-card {
+         display: grid;
+         grid-template-columns: 1fr auto;
+         min-height: 105px;
+         padding: 17px 19px;
+     }
+
+     .stat-top {
+         grid-column: 1;
+         text-align: left;
+         align-self: end;
+         margin-bottom: 7px;
+     }
+
+     .stat-main {
+         grid-column: 1;
+         grid-row: 2;
+         gap: 12px;
+     }
+
+     .stat-main strong {
+         font-size: 25px;
+     }
+
+     .stat-icon {
+         grid-row: 1 / span 2;
+         grid-column: 2;
+         width: 46px;
+         height: 46px;
+         align-self: center;
+     }
+
+     .stat-foot {
+         grid-column: 1 / -1;
+         margin: 8px 0 0;
+         text-align: left;
+     }
+
+     .section-block {
+         margin-top: 29px;
+     }
+
+     .section-heading h3 {
+         font-size: 18px;
+     }
+
+     .document-row {
+         gap: 10px;
+         padding: 13px 12px;
+     }
+
+     .file-icon {
+         width: 39px;
+         height: 42px;
+     }
+
+     .doc-status {
+         font-size: 9px;
+         padding: 5px 7px;
+     }
+
+     .document-meta strong {
+         font-size: 11px;
+     }
+
+     .document-meta span {
+         font-size: 10px;
+     }
+
+     .page-heading h2,
+     .page-heading-row h2 {
+         font-size: 25px;
+     }
+
+     .upload-panel {
+         padding: 12px;
+     }
+
+     .dropzone {
+         min-height: 270px;
+         padding: 22px 14px;
+     }
+
+     .dropzone h3 {
+         font-size: 15px;
+     }
+
+     .dropzone p {
+         font-size: 12px;
+     }
+
+     .upload-actions {
+         align-items: stretch;
+         flex-direction: column;
+     }
+
+     .upload-actions .primary-button {
+         width: 100%;
+     }
+
+     .page-heading-row {
+         align-items: flex-start;
+         flex-direction: column;
+     }
+
+     .page-heading-row>.primary-button {
+         width: 100%;
+     }
+
+     .filter-row {
+         align-items: flex-start;
+         flex-direction: column;
+     }
+
+     .library-search {
+         width: 100%;
+         max-width: none;
+     }
+
+     .workspace-layout {
+         grid-template-columns: 1fr;
+     }
+
+     .workspace-docs {
+         padding: 15px;
+     }
+
+     .workspace-docs #workspaceDocumentList {
+         display: flex;
+         gap: 7px;
+         overflow-x: auto;
+     }
+
+     .workspace-doc-button {
+         min-width: 160px;
+         margin-top: 8px;
+     }
+
+     .chat-panel {
+         min-height: 490px;
+     }
+
+     .settings-card {
+         align-items: flex-start;
+         padding: 17px;
+     }
+
+     .toggle-row {
+         gap: 7px;
+     }
+
+     .toggle-row>span:first-child {
+         font-size: 0;
+     }
+
+     .toggle-row>span:first-child svg {
+         width: 19px;
+         height: 19px;
+     }
+
+     .toast-region {
+         right: 12px;
+         bottom: 12px;
+     }
+ }
+
+ @media (prefers-reduced-motion: reduce) {
+
+     *,
+     *::before,
+     *::after {
+         scroll-behavior: auto !important;
+         animation-duration: .01ms !important;
+         transition-duration: .01ms !important;
+     }}
+
+     /* Dashboard layout overflow fix */
+.main-area {
+    min-width: 0;
+    width: auto;
+    overflow-x: clip;
+}
+
+.topbar {
+    min-width: 0;
+    width: 100%;
+}
+
+.welcome-copy {
+    min-width: 0;
+}
+
+.welcome-copy h1 {
+    overflow-wrap: anywhere;
+}
+
+.page-content {
+    width: 100%;
+    min-width: 0;
+}
+
+@media (max-height: 800px) {
+    .sidebar {
+        padding-top: 24px;
+    }
+
+    .brand {
+        margin-bottom: 32px;
+    }
+
+    .profile-area {
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+}
+
+
+  </style>
+</head>
+<body data-user-name="{{ user.name }}">
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#" data-page="dashboard" aria-label="DocuMind AI home">
+        <span class="brand-mark"><i data-lucide="sparkles"></i></span>
+        <span class="brand-name">DocuMind <b>AI</b></span>
+      </a>
+
+      <div class="nav-label">WORKSPACE</div>
+      <nav class="main-nav" aria-label="Main navigation">
+        <button class="nav-item active" data-page="dashboard"><i data-lucide="layout-grid"></i><span>Dashboard</span></button>
+        <button class="nav-item" data-page="upload"><i data-lucide="upload"></i><span>Upload</span></button>
+        <button class="nav-item" data-page="workspace"><i data-lucide="sparkles"></i><span>AI Workspace</span><span class="nav-tag">AI</span></button>
+        <button class="nav-item" data-page="documents"><i data-lucide="folder"></i><span>My Documents</span></button>
+      </nav>
+
+      <div class="nav-label secondary-label">PREFERENCES</div>
+      <nav class="main-nav" aria-label="Preferences">
+        <button class="nav-item" data-page="settings"><i data-lucide="settings"></i><span>Settings</span></button>
+        <button class="nav-item" data-page="help"><i data-lucide="circle-help"></i><span>Help &amp; support</span></button>
+        <button type="button"class="nav-item"  id="logoutBtn"><i data-lucide="log-out"></i><span>Logout</span></button>
+      </nav>
+        
+     <!-- <div class="usage-card">
+    <div class="usage-heading">
+        <span>Monthly usage</span>
+        <strong>
+            <span id="usageCount">0</span>
+            of
+            <span id="usageLimit">20</span>
+        </strong>
+    </div> -->
+<!-- </div> -->
+
+
+      
+
+      <div class="profile-area">
+        <div class="avatar" id="userAvatar">{{user.name[:1] | upper}}</div>
+        <div class="profile-copy"><strong>{{ user.name }}</strong>
+        <span>{{user.email}}</span>
+    </div>
+        <button class="icon-button profile-menu" id="profileMenu" aria-label="Profile options"><i data-lucide="more-horizontal"></i></button>
+      </div>
+    </aside>
+
+    <main class="main-area">
+      <header class="topbar">
+        <button class="icon-button mobile-menu" id="mobileMenu" aria-label="Open navigation"><i data-lucide="menu"></i></button>
+        <div class="welcome-copy">
+          <h1 id="pageTitle">Hey! {{ user.name }}</h1>
+          <p id="pageSubtitle">Here's what's happening with your documents.</p>
+        </div>
+        <div class="top-actions">
+          <label class="search-box" id="searchBox">
+            <i data-lucide="search"></i>
+            <input type="search" id="globalSearch" placeholder="Search documents..." aria-label="Search documents">
+            <kbd>⌘ K</kbd>
+          </label>
+          <button class="icon-button notification-button" id="notificationButton" aria-label="Notifications"><i data-lucide="activity"></i><span class="notification-dot"></span></button>
+          <button class="primary-button top-upload" id="topUpload"><i data-lucide="plus"></i><span>Upload document</span></button>
+        </div>
+      </header>
+
+      <div class="page-content">
+        <section class="page-view active" id="dashboardPage">
+          <section class="hero-card">
+            <div class="hero-orbit orbit-one"></div><div class="hero-orbit orbit-two"></div>
+            <div class="hero-content">
+              <div class="eyebrow"><i data-lucide="sparkles"></i> AI DOCUMENT INTELLIGENCE</div>
+              <h2>Turn dense documents into<br class="desktop-break"> clear, actionable knowledge.</h2>
+              <p>Upload any PDF and get a concise summary, key insights, and cited answers in seconds.</p>
+              <button class="hero-button" id="analyzeButton"><i data-lucide="upload"></i> upload a document</button>
+            </div>
+            <div class="hero-visual" aria-hidden="true">
+              <div class="float-dot dot-a"></div><div class="float-dot dot-b"></div><div class="float-dot dot-c"></div>
+              <div class="document-illustration">
+                <div class="pdf-pill">PDF</div>
+                <div class="doc-line line-long"></div><div class="doc-line line-medium"></div><div class="doc-line line-short"></div>
+                <div class="summary-pill"><i data-lucide="sparkles"></i><span>AI summary ready</span></div>
+              </div>
+            </div>
+          </section>
+
+          
+<section class="stats-grid" aria-label="Document statistics">
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span>Total documents</span>
+        </div>
+        <div class="stat-main">
+            <span class="stat-icon mint">
+                <i data-lucide="file-text"></i>
+            </span>
+            <strong id="totalDocuments">0</strong>
+        </div>
+        <p class="stat-foot">Your uploaded PDFs</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span>Total pages</span>
+        </div>
+        <div class="stat-main">
+            <span class="stat-icon lavender">
+                <i data-lucide="files"></i>
+            </span>
+            <strong id="totalPages">0</strong>
+        </div>
+        <p class="stat-foot">Across your documents</p>
+    </article>
+
+    <article class="stat-card">
+        <div class="stat-top">
+            <span>Storage used</span>
+        </div>
+        <div class="stat-main">
+            <span class="stat-icon amber">
+                <i data-lucide="hard-drive"></i>
+            </span>
+            <strong id="totalStorage">0 B</strong>
+        </div>
+        <p class="stat-foot">Size of uploaded PDFs</p>
+    </article>
+
+</section>
+
+
+          <section class="section-block">
+            <div class="section-heading"><div><h3>Recent documents</h3><p>Pick up where you left off.</p></div><button class="text-button" data-page="documents">View all <i data-lucide="arrow-right"></i></button></div>
+            <div class="document-list" id="recentDocuments"></div>
+          </section>
+        </section>
+
+        <section class="page-view" id="uploadPage">
+          <div class="page-heading"><span class="section-kicker">GET STARTED</span><h2>Upload a document</h2><p>Add a PDF to summarize it, explore insights, and ask questions.</p></div>
+          <div class="upload-panel">
+            <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Choose PDF file">
+              <div class="drop-icon"><i data-lucide="file-up"></i></div>
+              <h3>Drag and drop your PDF here</h3><p>or <button class="inline-link" id="browseFiles">browse files</button> from your computer</p>
+              <span class="file-hint">PDF files only · Max 20 MB</span>
+              <input type="file" id="fileInput" accept="application/pdf,.pdf" hidden>
+            </div>
+            <div class="upload-selection hidden" id="uploadSelection"></div>
+            <div class="upload-actions"><span class="privacy-note"><i data-lucide="shield-check"></i> Your documents stay private.</span><button class="primary-button" id="processFile" disabled><i data-lucide="sparkles"></i> Upload document</button></div>
+            <p class="demo-note">Your PDFs are processed by the Server</p>
+          </div>
+        </section>
+
+        <section class="page-view" id="documentsPage">
+          <div class="section-heading page-heading-row"><div><span class="section-kicker">YOUR LIBRARY</span><h2>My Documents</h2><p>All your uploaded documents in one place.</p></div><button class="primary-button" id="documentsUpload"><i data-lucide="plus"></i> Upload document</button></div>
+          <div class="filter-row"><div class="search-box library-search"><i data-lucide="search"></i><input type="search" id="librarySearch" placeholder="Search by document name..."></div><span class="result-count" id="documentCount">3 documents</span></div>
+          <div class="document-list library-list" id="allDocuments"></div>
+          <div class="empty-state hidden" id="emptyDocuments"><i data-lucide="folder-open"></i><h3>No documents found</h3><p>Try another search or upload a new PDF.</p></div>
+        </section>
+
+        <section class="page-view" id="workspacePage">
+          <div class="page-heading"><span class="section-kicker">YOUR AI ASSISTANT</span><h2>AI Workspace</h2><p>Ask questions and explore insights from your documents.</p></div>
+          <div class="workspace-layout">
+            <aside class="workspace-docs"><h3>Choose a document</h3><p class="muted">Select a document to start a conversation.</p><div id="workspaceDocumentList"></div></aside>
+            <div class="chat-panel">
+              <div class="chat-header"><span class="chat-avatar"><i data-lucide="sparkles"></i></span><div><strong>DocuMind Assistant</strong><span id="selectedDocLabel">Choose a document to begin</span></div><span class="online-indicator"></span></div>
+              <div class="chat-messages" id="chatMessages"><div class="assistant-message"><span class="message-spark"><i data-lucide="sparkles"></i></span><div><strong>Hi {{ user.name }} ! </strong><p>Select a document, then ask a question. I’ll help you find answers with source references.</p><div class="suggestion-list"><button class="suggestion-chip">Summarize this document</button><button class="suggestion-chip">What are the key findings?</button></div></div></div></div>
+              <form class="chat-composer" id="chatForm"><input id="chatInput" placeholder="Ask a question about your document..." autocomplete="off" aria-label="Your question"><button type="submit" aria-label="Send message"><i data-lucide="arrow-up"></i></button></form>
+              <p class="chat-disclaimer">DocuMind AI can make mistakes. Verify important details in the original document.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="page-view" id="settingsPage">
+          <div class="page-heading"><span class="section-kicker">PREFERENCES</span><h2>Settings</h2><p>Make DocuMind work the way you prefer.</p></div>
+          <div class="settings-card"><div><h3>Appearance</h3><p>Choose the look that feels right for you.</p></div><label class="toggle-row"><span><i data-lucide="moon"></i> Dark mode</span><input type="checkbox" id="themeToggle"><span class="toggle-switch"></span></label></div>
+          <div class="settings-card"><div><h3>Account</h3>
+            <p>{{ user.name }} · {{ user.email }}</p>
+        </div>
+        <span class="status-pill">Verified account</span></div>
+          <div class="settings-card"><div><h3>Privacy &amp; security</h3><p>Your documents and conversations are private to your account.</p></div><i data-lucide="shield-check" class="settings-end-icon"></i></div>
+        </section>
+
+        <section class="page-view" id="helpPage">
+          <div class="page-heading"><span class="section-kicker">WE'RE HERE TO HELP</span><h2>Help &amp; support</h2><p>Quick answers to help you get the most from DocuMind AI.</p></div>
+          <div class="faq-list">
+            <details><summary>Which file types can I upload?</summary><p>For this project, the first version supports PDF documents up to 20 MB.</p></details>
+            <details><summary>How does document chat work?</summary><p>DocuMind retrieves relevant passages from your document and uses them as context for an AI-generated answer. Source references will be connected during backend integration.</p></details>
+            <details><summary>Are answers always correct?</summary><p>No AI system is perfect. Check cited passages and verify important details against the original document.</p></details>
+            <details>
+    <summary>How do I upload a document?</summary>
+    <p>Click the Upload Document button, select a PDF file from your device, and wait for the upload and processing to complete.</p>
+</details>
+
+<details>
+    <summary>Can I summarize long PDF documents?</summary>
+    <p>Yes. DocuMind is designed to help you understand lengthy documents by generating concise summaries of their key information.</p>
+</details>
+
+<details>
+    <summary>Can I ask questions about my uploaded PDF?</summary>
+    <p>Yes. Use the AI Workspace to ask questions about your uploaded document and receive answers based on relevant document content.</p>
+</details>
+
+<details>
+    <summary>How does DocuMind generate answers?</summary>
+    <p>DocuMind searches for relevant document passages and provides them as context to an AI model, which generates an answer based on the retrieved information.</p>
+</details>
+
+<details>
+    <summary>Does DocuMind support scanned PDFs?</summary>
+    <p>Text-based PDFs are best supported. Scanned PDFs may require OCR (Optical Character Recognition) to extract readable text accurately.</p>
+</details>
+
+<details>
+    <summary>What happens if my PDF upload fails?</summary>
+    <p>Check that your file is a supported PDF and does not exceed the 20 MB limit. If the problem continues, try again or check the application's error message.</p>
+</details>
+
+<details>
+    <summary>Can I upload multiple documents?</summary>
+    <p>You can use the document library to manage uploaded documents, subject to the application's current upload and storage functionality.</p>
+</details>
+
+<details>
+    <summary>Is my document content always private?</summary>
+    <p>Document privacy depends on the application's storage, access controls, and AI service configuration. Avoid uploading confidential information unless you understand how it is handled.</p>
+</details>
+
+<details>
+    <summary>Can I use DocuMind on my mobile phone?</summary>
+    <p>Yes. The interface is designed to adapt to different screen sizes, including mobile devices. Some workflows may vary depending on your screen size.</p>
+</details>
+
+<details>
+    <summary>What should I do if an answer seems incorrect?</summary>
+    <p>Ask a more specific question, review the relevant passages, and compare the answer with the original PDF before relying on it.</p>
+</details>
+
+<details>
+    <summary>Do I need to read the entire PDF manually?</summary>
+    <p>Not necessarily. DocuMind can help you find key information and understand the document faster, but you should review the original document when accuracy is important.</p>
+</details>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast-region" id="toastRegion" aria-live="polite"></div>
+  <div class="modal-backdrop hidden" id="notificationModal" role="dialog" aria-modal="true" aria-labelledby="notificationTitle">
+    <div class="modal-card small-modal"><button class="modal-close" data-close-modal aria-label="Close"><i data-lucide="x"></i></button><span class="modal-icon"><i data-lucide="bell"></i></span><h2 id="notificationTitle">You're all caught up</h2><p>No new notifications right now. We’ll let you know when your documents are ready.</p><button class="primary-button modal-done" data-close-modal>Got it</button></div>
+  </div>
+
+  <!-- Vanila js-->
+  <script>
+    
+let demoDocuments = [];
+
+const currentUserName =
+    document.body.dataset.userName || "User";
+
+const pageMeta = {
+    dashboard: [
+        `Hey!  ${document.body.dataset.userName}`,
+        "Here's what's happening with your documents."
+    ],
+    upload: [
+        "Upload a document",
+        "Add a PDF to your DocuMind library."
+    ],
+    workspace: [
+        "AI Workspace",
+        "Ask questions. Discover insights. Find answers."
+    ],
+    documents: [
+        "My Documents",
+        "Your document library, all in one place."
+    ],
+    settings: [
+        "Settings",
+        "Personalize your DocuMind experience."
+    ],
+    help: [
+        "Help & support",
+        "Find answers and get help with DocuMind AI."
+    ]
+};
+
+const pageElements = {
+    dashboard: document.getElementById("dashboardPage"),
+    upload: document.getElementById("uploadPage"),
+    workspace: document.getElementById("workspacePage"),
+    documents: document.getElementById("documentsPage"),
+    settings: document.getElementById("settingsPage"),
+    help: document.getElementById("helpPage")
+};
+
+let selectedFile = null;
+let selectedWorkspaceDoc = null;
+let conversationCount = 0;
+
+const fileInput = document.getElementById("fileInput");
+const processButton = document.getElementById("processFile");
+const dropzone = document.getElementById("dropzone");
+
+function icon(name, className = "") {
+    return `<i data-lucide="${name}"${className ? ` class="${className}"` : ""}></i>`;
+}
+
+function refreshIcons() {
+    if (window.lucide) window.lucide.createIcons();
+}
+
+function escapeHTML(value) {
+    return String(value ?? "").replace(/[&<>"']/g, ch => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+    }[ch]));
+}
+
+function showToast(message, iconName = "check-circle") {
+    const toast = document.createElement("div");
+    toast.className = "toast";
+    toast.innerHTML = `${icon(iconName)}<span>${escapeHTML(message)}</span>`;
+
+    document.getElementById("toastRegion").appendChild(toast);
+    refreshIcons();
+
+    window.setTimeout(() => toast.remove(), 3600);
+}
+
+function formatBytes(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) {
+        return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function formatDocumentDate(value) {
+    if (!value) return "Date unavailable";
+
+    // SQLite CURRENT_TIMESTAMP is UTC.
+    const utcValue = value.replace(" ", "T") + "Z";
+    const date = new Date(utcValue);
+
+    if (Number.isNaN(date.getTime())) return value;
+
+    return date.toLocaleString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+        timeZone: "Asia/Kolkata"
+    });
+}
+
+function navigateTo(page) {
+    if (!pageElements[page]) return;
+
+    Object.entries(pageElements).forEach(([key, element]) => {
+        element.classList.toggle("active", key === page);
+    });
+
+    document.querySelectorAll(".nav-item[data-page]").forEach(button => {
+        button.classList.toggle("active", button.dataset.page === page);
+    });
+
+    document.getElementById("pageTitle").textContent = pageMeta[page][0];
+    document.getElementById("pageSubtitle").textContent = pageMeta[page][1];
+    document.getElementById("sidebar").classList.remove("open");
+
+    if (page === "documents") {
+        renderDocuments(document.getElementById("librarySearch").value);
+    }
+
+    if (page === "workspace") {
+        renderWorkspaceDocuments();
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+    refreshIcons();
+}
+
+function docRow(doc) {
+    return `
+        <article class="document-row"
+            data-document-name="${escapeHTML(doc.name.toLowerCase())}">
+            <span class="file-icon">${icon("file-text")}</span>
+
+            <div class="document-meta">
+                <strong title="${escapeHTML(doc.name)}">
+                    ${escapeHTML(doc.name)}
+                </strong>
+                <span>
+                    ${escapeHTML(doc.size)} &nbsp;·&nbsp;
+                    ${doc.pages} pages &nbsp;·&nbsp;
+                    ${escapeHTML(doc.date)}
+                </span>
+            </div>
+
+            <span class="doc-status">${escapeHTML(doc.status)}</span>
+
+            <button class="row-action open-doc"
+                data-id="${doc.id}"
+                title="Open in AI Workspace"
+                aria-label="Open ${escapeHTML(doc.name)}">
+                ${icon("arrow-up-right")}
+            </button>
+        </article>
+    `;
+}
+
+function updateDocumentStatistics(documents) {
+    const totalDocuments = documents.length;
+
+    const totalPages = documents.reduce(
+        (sum, doc) => sum + (Number(doc.page_count) || 0),
+        0
+    );
+
+    const totalBytes = documents.reduce(
+        (sum, doc) => sum + (Number(doc.file_size) || 0),
+        0
+    );
+
+    const documentsElement = document.getElementById("totalDocuments");
+    const pagesElement = document.getElementById("totalPages");
+    const storageElement = document.getElementById("totalStorage");
+
+    if (documentsElement) {
+        documentsElement.textContent = totalDocuments.toLocaleString();
+    }
+
+    if (pagesElement) {
+        pagesElement.textContent = totalPages.toLocaleString();
+    }
+
+    if (storageElement) {
+        storageElement.textContent = formatBytes(totalBytes);
+    }
+}
+
+/* Load actual documents from the Flask API */
+async function loadDocuments() {
+    try {
+        const response = await fetch("/api/documents");
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Could not load documents.");
+        }
+
+        demoDocuments = (result.documents || []).map(doc => ({
+            id: doc.id,
+            name: doc.filename,
+            size: formatBytes(doc.file_size),
+            storedFilename: doc.stored_filename,
+            pages: doc.page_count,
+            date: formatDocumentDate(doc.upload_date),
+            status: doc.status || "extracted",
+            summary: "Text extracted successfully."
+        }));
+
+        updateDocumentStatistics(result.documents || []);
+
+        if (
+            selectedWorkspaceDoc !== null &&
+            !demoDocuments.some(doc => doc.id === selectedWorkspaceDoc)
+        ) {
+            selectedWorkspaceDoc = null;
+        }
+
+        renderRecentDocuments();
+
+        renderDocuments(
+            document.getElementById("librarySearch").value
+        );
+
+        renderWorkspaceDocuments();
+
+        // const total = document.getElementById("totalDocuments");
+
+        // if (total) {
+        //     total.textContent = result.count ?? demoDocuments.length;
+        // }
+
+    } catch (error) {
+        console.error("Document loading failed:", error);
+
+        showToast(
+            "Unable to load documents from the database.",
+            "alert-circle"
+        );
+    }
+}
+
+function renderRecentDocuments() {
+    const container = document.getElementById("recentDocuments");
+
+    container.innerHTML = demoDocuments
+        .slice(0, 3)
+        .map(docRow)
+        .join("");
+
+    refreshIcons();
+}
+
+function renderDocuments(query = "") {
+    const normalized = query.trim().toLowerCase();
+
+    const filtered = demoDocuments.filter(doc =>
+        doc.name.toLowerCase().includes(normalized)
+    );
+
+    document.getElementById("allDocuments").innerHTML =
+        filtered.map(docRow).join("");
+
+    document.getElementById("documentCount").textContent =
+        `${filtered.length} document${filtered.length === 1 ? "" : "s"}`;
+
+    document.getElementById("emptyDocuments")
+        .classList.toggle("hidden", filtered.length > 0);
+
+    document.getElementById("allDocuments")
+        .classList.toggle("hidden", filtered.length === 0);
+
+    refreshIcons();
+}
+
+function renderWorkspaceDocuments() {
+    const container = document.getElementById("workspaceDocumentList");
+
+    container.innerHTML = demoDocuments.map(doc => `
+        <button class="workspace-doc-button ${
+            selectedWorkspaceDoc === doc.id ? "selected" : ""
+        }"
+            data-id="${escapeHTML(String(doc.id))}"
+            data-filename="${escapeHTML(doc.name)}">
+            ${icon("file-text")}
+            <span>${escapeHTML(doc.name)}</span>
+        </button>
+    `).join("");
+
+    const selectedDoc = demoDocuments.find(
+        doc => doc.id === selectedWorkspaceDoc
+    );
+
+    document.getElementById("selectedDocLabel").textContent =
+        selectedDoc ? selectedDoc.name : "Choose a document to begin";
+
+    refreshIcons();
+}
+
+
+function chooseFile(file) {
+    if (!file) return;
+
+    if (
+        file.type !== "application/pdf" &&
+        !file.name.toLowerCase().endsWith(".pdf")
+    ) {
+        showToast("Please choose a PDF file.", "alert-circle");
+        return;
+    }
+
+    const maxSize = 20 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+        showToast("This file is larger than 20 MB.", "alert-circle");
+        return;
+    }
+
+    selectedFile = file;
+
+    document.getElementById("uploadSelection").innerHTML = `
+        ${icon("file-text")}
+        <span class="selection-name">${escapeHTML(file.name)}</span>
+        <span class="selection-size">${formatBytes(file.size)}</span>
+        <button class="row-action" id="removeFile" aria-label="Remove file">
+            ${icon("x")}
+        </button>
+    `;
+
+    document.getElementById("uploadSelection").classList.remove("hidden");
+    document.getElementById("processFile").disabled = false;
+    document.getElementById("dropzone").classList.add("has-file");
+
+    refreshIcons();
+}
+
+function clearFile() {
+    selectedFile = null;
+    fileInput.value = "";
+
+    document.getElementById("uploadSelection").classList.add("hidden");
+    document.getElementById("uploadSelection").innerHTML = "";
+    document.getElementById("dropzone").classList.remove("has-file");
+
+    processButton.disabled = true;
+    processButton.innerHTML = `${icon("sparkles")} Analyze document`;
+
+    refreshIcons();
+}
+
+/* Upload the selected PDF to Flask */
+processButton.addEventListener("click", async () => {
+    const file = selectedFile;
+
+    if (!file) {
+        showToast("Please select a PDF first.", "alert-circle");
+        return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    processButton.disabled = true;
+    processButton.textContent = "Processing PDF...";
+
+    try {
+        const response = await fetch("/api/documents/upload", {
+            method: "POST",
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.error || "Upload failed.");
+        }
+
+        console.log("Extracted text preview:", result.preview);
+
+        await loadDocuments();
+        clearFile();
+
+        showToast("PDF uploaded and saved successfully.", "check-circle");
+
+    } catch (error) {
+        console.error("PDF upload failed:", error);
+
+        showToast(
+            error.message || "Something went wrong.",
+            "alert-circle"
+        );
+
+    } finally {
+        processButton.disabled = !selectedFile;
+        processButton.innerHTML = `${icon("sparkles")} Analyze document`;
+
+        refreshIcons();
+    }
+});
+
+async function loadMonthlyUsage() {
+    try {
+        const response = await fetch("/api/usage");
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error("Failed to load monthly usage");
+        }
+
+        const used = Number(result.used) || 0;
+        const limit = Number(result.limit) || 20;
+        const remaining = Math.max(0, limit - used);
+        const percentage = limit > 0
+            ? Math.min(100, (used / limit) * 100)
+            : 0;
+
+        document.getElementById("usageCount").textContent = used;
+        document.getElementById("usageLimit").textContent = limit;
+        document.getElementById("usageRemaining").textContent =
+            `${remaining} analyses remaining`;
+
+        document.getElementById("usageProgress").style.width =
+            `${percentage}%`;
+
+    } catch (error) {
+        console.error("Usage loading failed:", error);
+    }
+}
+
+function getDemoAnswer(question, doc) {
+    const q = question.toLowerCase();
+
+    if (q.includes("summar")) {
+        return doc.summary;
+    }
+
+    if (q.includes("risk")) {
+        return "The RAG backend will retrieve relevant passages and provide source page references.";
+    }
+
+    if (q.includes("key finding") || q.includes("insight")) {
+        return `Key takeaway: ${doc.summary} Evidence-backed findings will be available after RAG integration.`;
+    }
+
+    return `Your question about "${doc.name}" has been received. AI answers grounded in the document will be connected during RAG integration.`;
+}
+
+async function submitDemoQuestion(question) {
+    const cleanQuestion = question.trim();
+
+    if (!cleanQuestion) return;
+
+    if (selectedWorkspaceDoc === null) {
+        showToast("Choose a document first to start chatting.", "file-question");
+        return;
+    }
+
+    const doc = demoDocuments.find(
+        item => item.id === selectedWorkspaceDoc
+    );
+
+    if (!doc) {
+        showToast("Please select a document.", "alert-circle");
+        return;
+    }
+
+    const messages = document.getElementById("chatMessages");
+    const chatInput = document.getElementById("chatInput");
+    const chatForm = document.getElementById("chatForm");
+
+    const user = document.createElement("div");
+    user.className = "user-message";
+    user.textContent = cleanQuestion;
+    messages.appendChild(user);
+
+    const response = document.createElement("div");
+    response.className = "assistant-message";
+
+    const loading = document.createElement("div");
+    loading.className = "bot-response";
+    loading.textContent = "Analyzing your document...";
+
+    response.innerHTML = `
+        <span class="message-spark">${icon("sparkles")}</span>
+        <div>
+            <strong>DocuMind Assistant</strong>
+        </div>
+    `;
+    response.lastElementChild.appendChild(loading);
+    messages.appendChild(response);
+    messages.scrollTop = messages.scrollHeight;
+
+    chatInput.value = "";
+    conversationCount++;
+    // document.getElementById("chatInput").value = "";
+    const submitButton = chatForm.querySelector('button[type="submit"]');
+    if (submitButton) submitButton.disabled = true;
+
+      try {
+        const apiResponse = await fetch("/api/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                question: cleanQuestion,
+                filename: doc.storedFilename
+            })
+        });
+
+        const result = await apiResponse.json();
+
+        if (!apiResponse.ok) {
+            throw new Error(result.error || "Unable to answer this question.");
+        }
+
+        await loadMonthlyUsage();
+
+        loading.textContent = result.answer || "No answer was returned.";
+
+        if (result.sources && result.sources.length > 0) {
+            const sources = document.createElement("p");
+            sources.style.marginTop = "10px";
+            sources.textContent = "Sources: " + result.sources
+                .map(source => `Page ${source.page}, Chunk ${source.chunk_index}`)
+                .join("; ");
+
+            loading.appendChild(sources);
+        } 
+    } catch (error) {
+        loading.textContent = `Error: ${error.message}`;
+    }finally {
+        if (submitButton) submitButton.disabled = false;
+        messages.scrollTop = messages.scrollHeight;
+        refreshIcons();
+}}
+
+/* Main navigation and page interactions */
+document.addEventListener("click", event => {
+    const pageButton = event.target.closest("[data-page]");
+
+    if (pageButton) {
+        event.preventDefault();
+        navigateTo(pageButton.dataset.page);
+    }
+
+    const openDoc = event.target.closest(".open-doc");
+
+    if (openDoc) {
+        selectedWorkspaceDoc = Number(openDoc.dataset.id);
+        navigateTo("workspace");
+        renderWorkspaceDocuments();
+    }
+
+    const workspaceDoc = event.target.closest(".workspace-doc-button");
+
+    if (workspaceDoc) {
+        selectedWorkspaceDoc = Number(workspaceDoc.dataset.id);
+        renderWorkspaceDocuments();
+
+        const doc = demoDocuments.find(
+            item => item.id === selectedWorkspaceDoc
+        );
+
+        const messages = document.getElementById("chatMessages");
+
+        if (doc) {
+            messages.innerHTML = `
+                <div class="assistant-message">
+                    <span class="message-spark">${icon("sparkles")}</span>
+                    <div>
+                        <strong>${escapeHTML(doc.name)}</strong>
+                        <p>${escapeHTML(doc.summary)}</p>
+                        <div class="suggestion-list">
+                            <button class="suggestion-chip">Summarize this document</button>
+                            <button class="suggestion-chip">What are the key findings?</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        refreshIcons();
+    }
+
+    const suggestion = event.target.closest(".suggestion-chip");
+
+    if (suggestion) {
+        submitDemoQuestion(suggestion.textContent);
+    }
+
+    if (event.target.closest("#topUpload, #analyzeButton, #documentsUpload")) {
+        navigateTo("upload");
+    }
+
+    if (event.target.closest("#browseFiles")) {
+        event.preventDefault();
+        event.stopPropagation();
+        fileInput.click();
+    } else if (event.target.closest("#dropzone")) {
+        fileInput.click();
+    }
+
+    if (event.target.closest("#removeFile")) {
+        clearFile();
+    }
+
+    if (event.target.closest("#notificationButton")) {
+        document.getElementById("notificationModal").classList.remove("hidden");
+    }
+
+    if (event.target.closest("[data-close-modal]")) {
+        document.getElementById("notificationModal").classList.add("hidden");
+    }
+
+    if (event.target.closest("#mobileMenu")) {
+        document.getElementById("sidebar").classList.toggle("open");
+    }
+
+    if (event.target.closest("#profileMenu")) {
+        showToast("Profile menu", "user-round");
+    }
+});
+
+/* File picker and drag-and-drop */
+fileInput.addEventListener("change", event => {
+    chooseFile(event.target.files[0]);
+});
+
+dropzone.addEventListener("dragover", event => {
+    event.preventDefault();
+    dropzone.classList.add("dragover");
+});
+
+dropzone.addEventListener("dragleave", () => {
+    dropzone.classList.remove("dragover");
+});
+
+dropzone.addEventListener("drop", event => {
+    event.preventDefault();
+    dropzone.classList.remove("dragover");
+    chooseFile(event.dataTransfer.files[0]);
+});
+
+dropzone.addEventListener("keydown", event => {
+    if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        fileInput.click();
+    }
+});
+
+/* Search */
+document.getElementById("librarySearch").addEventListener("input", event => {
+    renderDocuments(event.target.value);
+});
+
+document.getElementById("globalSearch").addEventListener("input", event => {
+    const box = document.getElementById("searchBox");
+
+    if (event.target.value.trim()) {
+        box.classList.add("expanded");
+        navigateTo("documents");
+
+        document.getElementById("librarySearch").value = event.target.value;
+        renderDocuments(event.target.value);
+    }
+});
+
+document.getElementById("searchBox").addEventListener("click", () => {
+    const box = document.getElementById("searchBox");
+
+    box.classList.add("expanded");
+    document.getElementById("globalSearch").focus();
+});
+
+/* Keyboard shortcuts */
+document.addEventListener("keydown", event => {
+    if (
+        (event.metaKey || event.ctrlKey) &&
+        event.key.toLowerCase() === "k"
+    ) {
+        event.preventDefault();
+
+        const box = document.getElementById("searchBox");
+        box.classList.add("expanded");
+        document.getElementById("globalSearch").focus();
+    }
+
+    if (event.key === "Escape") {
+        document.getElementById("notificationModal").classList.add("hidden");
+        document.getElementById("sidebar").classList.remove("open");
+    }
+});
+
+/* Chat form — responses remain demo-only for now */
+document.getElementById("chatForm").addEventListener("submit", event => {
+    event.preventDefault();
+    submitDemoQuestion(document.getElementById("chatInput").value);
+});
+
+/* Theme switch */
+document.getElementById("themeToggle").addEventListener("change", event => {
+    document.body.classList.toggle("dark", event.target.checked);
+
+    showToast(
+        event.target.checked ? "Dark mode enabled." : "Light mode enabled.",
+        "moon"
+    );
+});
+
+/* Close notification modal when its backdrop is clicked */
+document.getElementById("notificationModal").addEventListener("click", event => {
+    if (event.target.id === "notificationModal") {
+        event.currentTarget.classList.add("hidden");
+    }
+});
+
+//Logout
+const logoutBtn = document.getElementById("logoutBtn");
+
+if (logoutBtn) {
+    logoutBtn.addEventListener("click", async () => {
+        try {
+            const response = await fetch("/logout", {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            });
+
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+
+            if (response.ok) {
+                window.location.href = "/";
+                return;
+            }
+
+            console.error("Logout failed:", response.status);
+            alert(`Logout failed: ${response.status}`);
+        } catch (error) {
+            console.error("Logout error:", error);
+            alert("Unable to logout. Please try again.");
+        }
+    });
+}
+
+/* Initial setup */
+refreshIcons();
+loadDocuments();
+  </script>
+</body>
+</html>

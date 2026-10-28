@@ -24,12 +24,14 @@ from werkzeug.security import (
 )
 
 from database.db import get_db_connection
+from flask import session, redirect, url_for  #logout
 
 
 auth_bp = Blueprint("auth", __name__)
 
 OTP_EXPIRY_SECONDS = 300
 MAX_OTP_ATTEMPTS = 5
+
 
 
 def send_otp_email(email, otp):
@@ -44,8 +46,12 @@ def send_otp_email(email, otp):
         )
 
     message = EmailMessage()
+
     message["Subject"] = "Verify your DocuMind AI account"
-    message["From"] = smtp_email
+
+    # Display DocuMind AI as the sender name in the recipient's inbox.
+    message["From"] = f"DocuMind AI <{smtp_email}>"
+
     message["To"] = email
 
     message.set_content(
@@ -59,7 +65,7 @@ Do not share this code with anyone.
 If you did not request this code, you can ignore this email.
 
 Regards,
-DocuMind AI Assistant
+DocuMind AI Team
 """
     )
 
@@ -69,6 +75,7 @@ DocuMind AI Assistant
         server.ehlo()
         server.login(smtp_email, smtp_password)
         server.send_message(message)
+
 
 
 @auth_bp.route("/signup", methods=["GET", "POST"])
@@ -188,7 +195,7 @@ def verify_otp():
         return redirect(url_for("auth.signup"))
 
     if request.method == "GET":
-        return render_template("verify_otp.html", email=email)
+        return render_template("otp_verification.html", email=email)
 
     otp = request.form.get("otp", "").strip()
 
@@ -300,7 +307,7 @@ def login():
         session["user_id"] = user["id"]
         session["user_name"] = user["name"]
 
-        return redirect(url_for("home"))
+        return redirect(url_for("dashboard"))
 
     except Exception:
         current_app.logger.exception("Login failed")
@@ -315,4 +322,4 @@ def login():
 def logout():
     session.clear()
     flash("You have been logged out.", "success")
-    return redirect(url_for("auth.login"))
+    return redirect(url_for("landing"))

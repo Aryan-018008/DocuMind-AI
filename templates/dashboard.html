@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./Style.css">
+  <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
   <script src="https://unpkg.com/lucide@latest"></script>
 
   <style>
@@ -2070,6 +2070,408 @@ body {
 }
 
 
+/* ==========================================
+   DocuMind AI — Chat UI Upgrade
+   ========================================== */
+
+.workspace-layout {
+    align-items: stretch;
+    min-width: 0;
+}
+
+.workspace-docs,
+.chat-panel {
+    min-width: 0;
+}
+
+.workspace-docs {
+    align-self: stretch;
+}
+
+.workspace-docs h3 {
+    font-size: 15px;
+    letter-spacing: -0.3px;
+}
+
+.workspace-docs > .muted {
+    margin-bottom: 18px;
+}
+
+.workspace-doc-button {
+    min-height: 48px;
+    border-radius: 10px;
+    transition: background .18s ease, border-color .18s ease;
+}
+
+.workspace-doc-button.selected {
+    color: var(--teal-dark);
+    font-weight: 650;
+    box-shadow: inset 3px 0 var(--teal);
+}
+
+.workspace-doc-button span {
+    min-width: 0;
+}
+
+/* Chat container */
+.chat-panel {
+    min-height: 600px;
+    height: min(72vh, 780px);
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--surface);
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    flex: 0 0 auto;
+    min-width: 0;
+    padding: 16px 20px;
+    background: var(--surface);
+}
+
+.chat-header > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.chat-header strong {
+    font-size: 14px;
+    letter-spacing: -.2px;
+}
+
+#selectedDocLabel {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+}
+
+.chat-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+}
+
+.online-indicator {
+    flex: 0 0 8px;
+    box-shadow: 0 0 0 4px rgba(32, 180, 134, .10);
+}
+
+/* Conversation area */
+.chat-messages {
+    flex: 1 1 auto;
+    min-height: 0;
+    gap: 20px;
+    padding: 24px;
+    background:
+        radial-gradient(circle at 90% 0%, rgba(12,124,115,.035), transparent 32%),
+        var(--surface);
+    overscroll-behavior: contain;
+    scroll-behavior: smooth;
+}
+
+.assistant-message {
+    width: 100%;
+    max-width: 100%;
+    gap: 11px;
+    min-width: 0;
+}
+
+.assistant-message > div {
+    flex: 1;
+    min-width: 0;
+}
+
+.message-spark {
+    width: 34px;
+    height: 34px;
+    border: 1px solid #cce8e3;
+    border-radius: 11px;
+    flex: 0 0 34px;
+}
+
+.assistant-message strong {
+    margin: 3px 0 8px;
+    font-size: 12px;
+    color: var(--text);
+}
+
+.assistant-message p {
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.75;
+}
+
+.bot-response {
+    max-width: 100%;
+    padding: 15px 17px;
+    border-radius: 4px 14px 14px 14px;
+    font-size: 13px;
+    line-height: 1.8;
+    overflow-wrap: anywhere;
+    background: var(--surface-soft);
+}
+
+/* User message bubble */
+.user-message {
+    align-self: flex-end;
+    width: fit-content;
+    max-width: min(82%, 560px);
+    padding: 12px 16px;
+    border-radius: 16px 16px 4px 16px;
+    box-shadow: 0 3px 8px rgba(12,124,115,.12);
+    font-size: 13px;
+    line-height: 1.75;
+    overflow-wrap: anywhere;
+}
+
+/* Suggested prompts */
+.suggestion-list {
+    gap: 9px;
+    margin-top: 16px;
+}
+
+.suggestion-chip {
+    padding: 10px 13px;
+    border-radius: 11px;
+    background: var(--surface);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.5;
+    transition: border-color .18s, background .18s, transform .18s;
+}
+
+.suggestion-chip:hover {
+    border-color: var(--teal);
+    background: var(--teal-soft);
+    transform: translateY(-1px);
+}
+
+/* Message input */
+.chat-composer {
+    flex: 0 0 auto;
+    align-items: center;
+    gap: 12px;
+    margin: 0 20px;
+    padding: 9px 10px 9px 17px;
+    border-radius: 15px;
+    background: var(--surface);
+    box-shadow: 0 0 0 3px rgba(12,124,115,.035);
+    transition: border-color .18s, box-shadow .18s;
+}
+
+.chat-composer:focus-within {
+    border-color: #80c5bc;
+    box-shadow: 0 0 0 3px rgba(12,124,115,.09);
+}
+
+.chat-composer input {
+    min-height: 36px;
+    font-size: 13px;
+}
+
+.chat-composer input::placeholder {
+    font-size: 12px;
+}
+
+.chat-composer button {
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    transition: background .18s, transform .18s;
+}
+
+.chat-composer button:hover:not(:disabled) {
+    background: var(--teal-dark);
+    transform: translateY(-1px);
+}
+
+.chat-composer button:disabled {
+    opacity: .55;
+    cursor: wait;
+}
+
+.chat-disclaimer {
+    flex: 0 0 auto;
+    margin: 11px 16px 15px;
+    line-height: 1.6;
+}
+
+/* Dark theme */
+body.dark .chat-messages {
+    background: var(--surface);
+}
+
+body.dark .suggestion-chip {
+    background: var(--surface-soft);
+    border-color: var(--border);
+}
+
+/* Tablet and mobile */
+@media (max-width: 980px) {
+    .workspace-layout {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 14px;
+    }
+
+    .workspace-docs {
+        padding: 16px;
+    }
+
+    .workspace-docs #workspaceDocumentList {
+        display: flex;
+        flex-wrap: nowrap;
+        gap: 8px;
+        overflow-x: auto;
+        padding-bottom: 5px;
+        scrollbar-width: thin;
+    }
+
+    .workspace-doc-button {
+        flex: 0 0 190px;
+        min-width: 0;
+        margin-top: 0;
+    }
+
+    .chat-panel {
+        height: min(70vh, 720px);
+        min-height: 500px;
+    }
+}
+
+@media (max-width: 480px) {
+    .chat-panel {
+        height: 68vh;
+        min-height: 460px;
+        border-radius: 14px;
+    }
+
+    .chat-header {
+        gap: 9px;
+        padding: 13px;
+    }
+
+    .chat-avatar {
+        width: 37px;
+        height: 37px;
+    }
+
+    .chat-header strong {
+        font-size: 12px;
+    }
+
+    .chat-messages {
+        padding: 16px 12px;
+        gap: 17px;
+    }
+
+    .assistant-message {
+        gap: 8px;
+    }
+
+    .message-spark {
+        width: 29px;
+        height: 29px;
+        flex-basis: 29px;
+    }
+
+    .assistant-message p,
+    .bot-response {
+        font-size: 12px;
+    }
+
+    .user-message {
+        max-width: 88%;
+        padding: 10px 13px;
+        font-size: 12px;
+    }
+
+    .suggestion-list {
+        gap: 7px;
+    }
+
+    .suggestion-chip {
+        max-width: 100%;
+        padding: 9px 10px;
+        white-space: normal;
+        text-align: left;
+    }
+
+    .chat-composer {
+        margin-inline: 10px;
+        padding: 7px 8px 7px 12px;
+        gap: 7px;
+    }
+
+    .chat-composer input {
+        font-size: 12px;
+    }
+
+    .chat-disclaimer {
+        margin: 9px 10px 12px;
+        font-size: 9px;
+    }
+}
+
+
+/* ===== DocuMind AI: cleaner workspace scrolling ===== */
+
+html,
+body {
+    min-height: 100%;
+}
+
+.workspace-layout {
+    min-width: 0;
+    align-items: stretch;
+}
+
+.chat-panel {
+    min-width: 0;
+    min-height: 0;
+    height: min(68vh, 720px);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.chat-messages {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-gutter: stable;
+}
+
+/* Keep the input visible while messages scroll */
+.chat-composer {
+    flex-shrink: 0;
+}
+
+/* Tablet and mobile: let the chat grow naturally */
+@media (max-width: 980px) {
+    .chat-panel {
+        height: 65vh;
+        min-height: 420px;
+    }
+}
+
+@media (max-width: 680px) {
+    .chat-panel {
+        height: 65vh;
+        min-height: 380px;
+    }
+
+    .chat-messages {
+        padding: 16px 12px;
+    }
+}
+
+
   </style>
 </head>
 <body data-user-name="{{ user.name }}">
@@ -2605,22 +3007,50 @@ function renderDocuments(query = "") {
     refreshIcons();
 }
 
+// function renderWorkspaceDocuments() {
+//     const container = document.getElementById("workspaceDocumentList");
+
+//     container.innerHTML = demoDocuments.map(doc => `
+//         <button class="workspace-doc-button ${
+//             selectedWorkspaceDoc === doc.id ? "selected" : ""
+//         }"
+//             data-filename="${escapeHTML(doc.storedFilename || doc.name)}"
+//             data-filename="${escapeHTML(doc.name)}">
+//             ${icon("file-text")}
+//             <span>${escapeHTML(doc.name)}</span>
+//         </button>
+//     `).join("");
+
+//     const selectedDoc = demoDocuments.find(
+//         doc => doc.id === selectedWorkspaceDoc
+//     );
+
+//     document.getElementById("selectedDocLabel").textContent =
+//         selectedDoc ? selectedDoc.name : "Choose a document to begin";
+
+//     refreshIcons();
+// }
+
+
 function renderWorkspaceDocuments() {
     const container = document.getElementById("workspaceDocumentList");
 
     container.innerHTML = demoDocuments.map(doc => `
-        <button class="workspace-doc-button ${
-            selectedWorkspaceDoc === doc.id ? "selected" : ""
-        }"
+        <button
+            type="button"
+            class="workspace-doc-button ${
+                Number(selectedWorkspaceDoc) === Number(doc.id) ? "selected" : ""
+            }"
             data-id="${escapeHTML(String(doc.id))}"
-            data-filename="${escapeHTML(doc.name)}">
+            data-filename="${escapeHTML(doc.storedFilename || doc.name)}"
+        >
             ${icon("file-text")}
             <span>${escapeHTML(doc.name)}</span>
         </button>
     `).join("");
 
     const selectedDoc = demoDocuments.find(
-        doc => doc.id === selectedWorkspaceDoc
+        doc => Number(doc.id) === Number(selectedWorkspaceDoc)
     );
 
     document.getElementById("selectedDocLabel").textContent =
@@ -2628,6 +3058,7 @@ function renderWorkspaceDocuments() {
 
     refreshIcons();
 }
+
 
 
 function chooseFile(file) {

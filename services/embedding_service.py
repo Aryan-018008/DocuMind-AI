@@ -37,10 +37,11 @@ def generate_embeddings(texts):
     model = get_embedding_model()
 
     embeddings = model.encode(
-        texts,
-        convert_to_numpy=True,
-        normalize_embeddings=True,
-        show_progress_bar=True
-    )
+    texts,
+    batch_size=8,
+    convert_to_numpy=True,
+    normalize_embeddings=True,
+    show_progress_bar=False
+)
 
     return embeddings

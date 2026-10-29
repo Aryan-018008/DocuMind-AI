@@ -37,39 +37,6 @@ class VectorStore:
         )
         return text.lower()
 
-    # @classmethod
-    # def _tokenize(cls, text):
-    #     text = cls._normalize(text)
-    #     tokens = re.findall(r"[a-z0-9]+", text)
-
-    #     # Light normalization: allow common word-form matches without
-    #     # relying on PDF-specific vocabulary or external NLP packages.
-    #     normalized = set()
-
-    #     for token in tokens:
-    #         if token in cls.STOP_WORDS:
-    #             continue
-
-    #         normalized.add(token)
-
-    #         if len(token) > 5 and token.endswith("ing"):
-    #             normalized.add(token[:-3])
-    #             normalized.add(token[:-3] + "e")
-
-    #         elif len(token) > 4 and token.endswith("ies"):
-    #             normalized.add(token[:-3] + "y")
-
-    #         elif len(token) > 4 and token.endswith("es"):
-    #             normalized.add(token[:-2])
-
-    #         elif len(token) > 3 and token.endswith("s"):
-    #             normalized.add(token[:-1])
-
-    #         elif len(token) > 4 and token.endswith("ed"):
-    #             normalized.add(token[:-2])
-
-    #     return normalized
-
     
     @classmethod
     def _tokenize(cls, text):

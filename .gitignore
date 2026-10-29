@@ -1,43 +1,63 @@
 
-# Environment secrets
+# =========================
+# Environment and secrets
+# =========================
 .env
 .env.*
 !.env.example
 
-# Python
+# =========================
+# Python cache
+# =========================
 __pycache__/
 *.py[cod]
-*.pyd
 .pytest_cache/
 .mypy_cache/
+.ruff_cache/
 
+# =========================
 # Virtual environments
+# =========================
 venv/
 .venv/
 env/
 
+# =========================
 # Local databases
+# =========================
 *.db
 *.sqlite
 *.sqlite3
 
-# Uploaded user documents
+# =========================
+# Uploaded PDFs and files
+# =========================
 uploads/*
 !uploads/.gitkeep
 
-# AI models and vector indexes
+# =========================
+# Generated AI models / indexes
+# =========================
 models/
 vector_store/
 faiss_index/
 *.faiss
 *.index
 
+# Hugging Face downloaded cache
+.cache/
+huggingface_cache/
+
+# =========================
 # Logs and temporary files
+# =========================
 *.log
 *.tmp
 *.temp
 
-# IDE and OS files
+# =========================
+# IDE and operating system
+# =========================
 .vscode/
 .idea/
 .DS_Store

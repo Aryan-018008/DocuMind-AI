@@ -1166,6 +1166,531 @@
                 transition-duration: .01ms !important;
             }
         }
+
+        
+/* =========================================
+   DocuMind AI — Responsive Polish
+   ========================================= */
+
+/* Prevent accidental horizontal overflow */
+html,
+body {
+    width: 100%;
+    max-width: 100%;
+}
+
+body {
+    overflow-x: clip;
+}
+
+.container,
+.hero-grid,
+.hero-copy,
+.preview-wrap,
+.preview-content,
+.feature-card,
+.step,
+.cta-box {
+    min-width: 0;
+}
+
+/* Tablet and smaller laptops */
+@media (max-width: 1000px) {
+    .hero-grid {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 40px;
+    }
+
+    .hero-copy {
+        width: 100%;
+    }
+
+    .preview-wrap {
+        max-width: 610px;
+    }
+
+    .floating-note {
+        right: 8px;
+    }
+}
+
+/* Mobile phones */
+@media (max-width: 760px) {
+    .container {
+        width: calc(100% - 32px);
+    }
+
+    .section {
+        padding-block: 56px;
+    }
+
+    .nav-inner {
+        min-height: 66px;
+        gap: 8px;
+    }
+
+    .brand {
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .brand-name {
+        font-size: 16px;
+        white-space: nowrap;
+    }
+
+    .brand-mark {
+        flex-shrink: 0;
+    }
+
+    .nav-actions {
+        flex-shrink: 0;
+        gap: 7px;
+    }
+
+    .nav-actions > .btn {
+        min-height: 40px;
+        padding-inline: 11px;
+        white-space: nowrap;
+    }
+
+    .menu-toggle {
+        flex-shrink: 0;
+        width: 40px;
+        height: 40px;
+    }
+
+    .nav-links {
+        top: 66px;
+        max-height: calc(100dvh - 66px);
+        overflow-y: auto;
+    }
+
+    .hero {
+        padding-block: 48px 58px;
+    }
+
+    .hero-copy h1 {
+        font-size: clamp(32px, 8.5vw, 46px);
+        line-height: 1.15;
+        overflow-wrap: break-word;
+    }
+
+    .hero-copy > p {
+        font-size: 15px;
+        line-height: 1.75;
+    }
+
+    .hero-actions {
+        gap: 10px;
+    }
+
+    .hero-actions .btn {
+        min-height: 47px;
+        padding-inline: 15px;
+    }
+
+    .hero-note {
+        justify-content: center;
+        align-items: flex-start;
+        text-align: left;
+        line-height: 1.6;
+    }
+
+    /* Keep the illustrative dashboard inside the screen */
+    .preview {
+        width: 100%;
+        transform: none;
+    }
+
+    .preview-body {
+        grid-template-columns: 88px minmax(0, 1fr);
+        min-height: 0;
+    }
+
+    .preview-sidebar {
+        min-width: 0;
+        padding: 14px 5px;
+    }
+
+    .side-item {
+        min-width: 0;
+        gap: 4px;
+        padding: 9px 4px;
+        font-size: 9px;
+        overflow-wrap: anywhere;
+    }
+
+    .preview-content {
+        padding: 13px 9px;
+    }
+
+    .preview-title-row {
+        flex-wrap: wrap;
+    }
+
+    .preview-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 5px;
+    }
+
+    .stat-card {
+        padding: 8px 5px;
+    }
+
+    .stat-card strong {
+        font-size: 14px;
+        overflow-wrap: anywhere;
+    }
+
+    .stat-card small {
+        line-height: 1.4;
+        overflow-wrap: anywhere;
+    }
+
+    .floating-note {
+        right: 5px;
+        bottom: -28px;
+        max-width: min(190px, 85%);
+    }
+
+    .trust-inner {
+        justify-content: flex-start;
+        gap: 15px;
+    }
+
+    .trust-item {
+        max-width: 100%;
+        align-items: flex-start;
+    }
+
+    .feature-card,
+    .step {
+        padding: 22px;
+    }
+
+    .cta-box {
+        padding: 40px 18px;
+    }
+
+    .cta-box h2 {
+        font-size: clamp(27px, 7vw, 36px);
+    }
+
+    .footer-inner {
+        gap: 15px;
+    }
+
+    .footer-copy {
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+}
+
+/* Extra-small phones */
+@media (max-width: 380px) {
+    .container {
+        width: calc(100% - 24px);
+    }
+
+    .brand-name {
+        font-size: 14px;
+        letter-spacing: -0.5px;
+    }
+
+    .brand-mark {
+        width: 34px;
+        height: 34px;
+    }
+
+    .nav-actions {
+        gap: 5px;
+    }
+
+    .nav-actions > .btn-primary {
+        padding-inline: 8px;
+        font-size: 11px;
+    }
+
+    .nav-actions > .btn-outline {
+        display: none;
+    }
+
+    .preview-body {
+        grid-template-columns: 75px minmax(0, 1fr);
+    }
+
+    .preview-title-row h3 {
+        font-size: 12px;
+    }
+
+    .preview-panel {
+        padding: 8px;
+    }
+
+    .document-row {
+        gap: 6px;
+    }
+
+    .pdf-icon {
+        width: 27px;
+        height: 31px;
+    }
+
+    .doc-info strong {
+        font-size: 9px;
+    }
+
+    .hero-copy h1 {
+        font-size: 32px;
+    }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .floating-note {
+        animation: none;
+    }
+
+    .btn,
+    .feature-card {
+        transition: none;
+    }
+}
+
+
+/* FINAL MOBILE OVERFLOW FIX */
+@media (max-width: 480px) {
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html,
+    body {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: hidden;
+    }
+
+    .container {
+        width: calc(100% - 28px);
+        max-width: 100%;
+        margin-inline: auto;
+    }
+
+    /* Navbar: keep logo, CTA and menu inside viewport */
+    .nav-inner {
+        width: 100%;
+        padding-inline: 10px;
+        gap: 6px;
+    }
+
+    .brand {
+        flex: 1 1 auto;
+        min-width: 0;
+        gap: 6px;
+    }
+
+    .brand-name {
+        font-size: 14px;
+        white-space: nowrap;
+    }
+
+    .nav-actions {
+        flex: 0 0 auto;
+        min-width: 0;
+        gap: 5px;
+    }
+
+    .nav-actions > .btn-primary {
+        padding-inline: 8px;
+        font-size: 11px;
+    }
+
+    .menu-toggle {
+        width: 38px;
+        min-width: 38px;
+        height: 38px;
+    }
+
+    /* Hero content stays within the container */
+    .hero-grid,
+    .hero-copy,
+    .hero-actions {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .hero-copy h1 {
+        font-size: clamp(29px, 8vw, 36px);
+        line-height: 1.16;
+        overflow-wrap: normal;
+    }
+
+    .hero-copy > p {
+        max-width: 100%;
+        font-size: 14px;
+        line-height: 1.75;
+        overflow-wrap: break-word;
+    }
+
+    .hero-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .hero-actions .btn {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        white-space: normal;
+        text-align: center;
+    }
+
+    .hero-note {
+        max-width: 100%;
+    }
+
+    /* Dashboard preview: no squeezed sidebar */
+    .preview-wrap {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        margin-inline: auto;
+    }
+
+    .preview {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+        transform: none;
+        overflow: hidden;
+    }
+
+    .preview-body {
+        grid-template-columns: minmax(0, 1fr);
+        min-width: 0;
+    }
+
+    /* Hide tiny illustrative sidebar on narrow screens */
+    .preview-sidebar {
+        display: none;
+    }
+
+    .preview-content {
+        width: 100%;
+        min-width: 0;
+        padding: 14px 10px;
+    }
+
+    .preview-title-row {
+        min-width: 0;
+        flex-wrap: wrap;
+    }
+
+    .preview-title-row h3,
+    .preview-title-row span {
+        overflow-wrap: anywhere;
+    }
+
+    .preview-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+    }
+
+    .stat-card {
+        min-width: 0;
+        padding: 9px 6px;
+    }
+
+    .stat-card strong,
+    .stat-card small {
+        overflow-wrap: anywhere;
+    }
+
+    .preview-panel {
+        min-width: 0;
+        padding: 10px;
+    }
+
+    .panel-heading {
+        flex-wrap: wrap;
+    }
+
+    .document-row {
+        min-width: 0;
+        gap: 7px;
+    }
+
+    .doc-info {
+        min-width: 0;
+    }
+
+    /* Notification sits below the preview instead of sticking out */
+    .floating-note {
+        position: relative;
+        right: auto;
+        bottom: auto;
+        width: fit-content;
+        max-width: 100%;
+        margin: 12px auto 0;
+        animation: none;
+    }
+
+    .trust-item {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .footer-inner,
+    .footer-links {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+}
+
+/* Extra-small phones */
+@media (max-width: 360px) {
+    .container {
+        width: calc(100% - 24px);
+    }
+
+    .brand-name {
+        font-size: 13px;
+    }
+
+    .brand-mark {
+        width: 32px;
+        height: 32px;
+    }
+
+    .nav-actions > .btn-primary {
+        padding-inline: 6px;
+        font-size: 10px;
+    }
+
+    .menu-toggle {
+        width: 34px;
+        min-width: 34px;
+        height: 36px;
+    }
+
+    .hero-copy h1 {
+        font-size: 29px;
+    }
+
+    .preview-stats {
+        gap: 4px;
+    }
+
+    .stat-card {
+        padding: 8px 4px;
+    }
+}
+
     </style>
 </head>
 

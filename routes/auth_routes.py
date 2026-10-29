@@ -81,7 +81,7 @@ DocuMind AI Team
 @auth_bp.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "GET":
-        return render_template("signup.html")
+        return render_template("SignUp.html")
 
     name = request.form.get("name", "").strip()
     email = request.form.get("email", "").strip().lower()

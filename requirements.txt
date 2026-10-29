@@ -1,6 +1,7 @@
 Flask
 PyMuPDF
-sentence-transformers
+# sentence-transformers
+fastembed
 faiss-cpu
 numpy
 python-dotenv

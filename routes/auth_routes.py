@@ -3,9 +3,7 @@ import os
 import re
 import time
 import secrets
-import smtplib
-
-from email.message import EmailMessage
+import resend
 
 from flask import (
     Blueprint,
@@ -24,7 +22,7 @@ from werkzeug.security import (
 )
 
 from database.db import get_db_connection
-from flask import session, redirect, url_for  #logout
+
 
 
 auth_bp = Blueprint("auth", __name__)
@@ -34,28 +32,22 @@ MAX_OTP_ATTEMPTS = 5
 
 
 
+
 def send_otp_email(email, otp):
-    """Send the email verification OTP using Gmail SMTP."""
+    """Send verification OTP using Resend API."""
 
-    smtp_email = os.getenv("SMTP_EMAIL")
-    smtp_password = os.getenv("SMTP_APP_PASSWORD")
+    api_key = os.getenv("RESEND_API_KEY")
 
-    if not smtp_email or not smtp_password:
-        raise RuntimeError(
-            "SMTP_EMAIL or SMTP_APP_PASSWORD is missing in .env"
-        )
+    if not api_key:
+        raise RuntimeError("RESEND_API_KEY is missing.")
 
-    message = EmailMessage()
+    resend.api_key = api_key
 
-    message["Subject"] = "Verify your DocuMind AI account"
-
-    # Display DocuMind AI as the sender name in the recipient's inbox.
-    message["From"] = f"DocuMind AI <{smtp_email}>"
-
-    message["To"] = email
-
-    message.set_content(
-        f"""Hello,
+    params = {
+        "from": "DocuMind AI <onboarding@resend.dev>",
+        "to": [email],
+        "subject": "Verify your DocuMind AI account",
+        "text": f"""Hello,
 
 Your DocuMind AI verification code is: {otp}
 
@@ -67,14 +59,16 @@ If you did not request this code, you can ignore this email.
 Regards,
 DocuMind AI Team
 """
+    }
+
+    result = resend.Emails.send(params)
+
+    current_app.logger.info(
+        "Verification email accepted by Resend. Email ID: %s",
+        result.get("id")
     )
 
-    with smtplib.SMTP("smtp.gmail.com", 587, timeout=20) as server:
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-        server.login(smtp_email, smtp_password)
-        server.send_message(message)
+    return result
 
 
 

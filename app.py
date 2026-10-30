@@ -55,6 +55,33 @@ app.register_blueprint(chat_bp)
 with app.app_context():
     init_db()
 
+# TEMPORARY DATABASE CHECK
+connection = get_db_connection()
+
+try:
+    users = connection.execute(
+        """
+        SELECT id, name, email, is_verified
+        FROM users
+        ORDER BY id
+        """
+    ).fetchall()
+
+    app.logger.warning("===== DATABASE USER CHECK =====")
+    app.logger.warning("TOTAL USERS: %s", len(users))
+
+    for user in users:
+        app.logger.warning(
+            "ID: %s | Name: %s | Email: %s | Verified: %s",
+            user["id"],
+            user["name"],
+            user["email"],
+            user["is_verified"]
+        )
+
+finally:
+    connection.close()
+
 
 # Public homepage.
 @app.route("/")

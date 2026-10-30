@@ -53,6 +53,8 @@ app.register_blueprint(chat_bp)
 
 with app.app_context():
 
+    init_db()
+
     connection = get_db_connection()
 
     try:

@@ -153,15 +153,11 @@ def signup():
             connection.execute(
                 "DELETE FROM email_otps WHERE email = ?", (email,)
             )
-            connection.execute(
-                "DELETE FROM users WHERE email = ? AND is_verified = 0",
-                (email,),
-            )
+            
             connection.commit()
 
             flash(
-                "We couldn't send the verification email. Check the server configuration and try again.",
-                "error",
+                "Your account has been created,but verification email could not be sent.Please try again later.",
             )
             return redirect(url_for("auth.signup"))
 
